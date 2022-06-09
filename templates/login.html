@@ -21,7 +21,7 @@ input[type=text], input[type=password] {
 }
 
 /* Set a style for all buttons */
-button {
+button, .submit {
   background-color: green;
   color: white;
   padding: 14px 20px;
@@ -31,7 +31,7 @@ button {
   width: 100%;
 }
 
-button:hover {
+button:hover, .submit:hover {
   opacity: 0.8;
 }
 
@@ -40,6 +40,12 @@ button:hover {
   width: auto;
   padding: 10px 18px;
   background-color: #f44336;
+}
+
+.submit {
+  width: auto;
+  padding: 10px 18px;
+  background-color: green;
 }
 
 /* Center the image and position the close button */
@@ -148,6 +154,7 @@ nav li {
   float:left;
   display:inline;
 }
+
 </style>
 </head>
 <body>
@@ -159,28 +166,23 @@ nav li {
     </ul> 
   </nav>
 
-<!--<button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>-->
+
 
 <div id="id01" class="modal">
-  
-  <form class="modal-content animate" action="/action_page.php" method="post">
 
+  <form class="modal-content animate" action="/action_page.php" method="post">
+    <h2>Login</h2>
     <div class="container">
       <label for="uname"><b>Username</b></label>
       <input type="text" placeholder="Enter Username" name="uname" required>
 
       <label for="psw"><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
-        
-      <button type="submit">Login</button>
-      <label>
-        <input type="checkbox" checked="checked" name="remember"> Remember me
-      </label>
     </div>
 
-    <div class="container" style="background-color:#f1f1f1">
+    <div class="container">
       <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
-      <span class="psw">Forgot <a href="#">password?</a></span>
+      <input type="submit" class="submit" name="Login">
     </div>
   </form>
 </div>
@@ -188,6 +190,7 @@ nav li {
 <div id="id02" class="modal">
   
     <form class="modal-content animate" action="/action_page.php" method="post">
+      <h2>Sign Up</h2>
   
       <div class="container">
         <label for="uname"><b>Username</b></label>
@@ -195,16 +198,11 @@ nav li {
   
         <label for="psw"><b>Password</b></label>
         <input type="password" placeholder="Enter Password" name="psw" required>
-          
-        <button type="submit">Sign Up</button>
-        <label>
-          <input type="checkbox" checked="checked" name="remember"> Remember me
-        </label>
       </div>
   
-      <div class="container" style="background-color:#f1f1f1">
+      <div class="container">
         <button type="button" onclick="document.getElementById('id02').style.display='none'" class="cancelbtn">Cancel</button>
-        <span class="psw">Forgot <a href="#">password?</a></span>
+        <input type="submit" class="submit" name="Sign Up">
       </div>
     </form>
   </div>
