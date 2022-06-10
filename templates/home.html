@@ -167,8 +167,8 @@ h2{
 
 <nav>
     <ul>
-      <li style="float:right"><button onclick="document.getElementById('id02').style.display='block'" style="width:auto;">Sign Up</button></li>
-      <li style="float:right"><button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button><li>
+      <li style="float:right"><button onclick="document.getElementById('signUpModal').style.display='block'" style="width:auto;">Sign Up</button></li>
+      <li style="float:right"><button onclick="document.getElementById('loginModal').style.display='block'" style="width:auto;">Login</button><li>
     </ul> 
   </nav>
 
@@ -188,7 +188,7 @@ h2{
   </ul>
 
 
-<div id="id01" class="modal">
+<div id="loginModal" class="modal">
 
   <form class="modal-content animate" action="/action_page.php" method="post">
     <h2>Login</h2>
@@ -198,16 +198,19 @@ h2{
 
       <label for="psw"><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
+
+      <label for="difficultyBar"><b>Difficulty</b></label><br>
+      <input type="range" max="5" min="0" id="difficultyBar" placeholder="Urgency" class="text-input" style="opacity: 1" required/>
     </div>
 
     <div class="container">
-      <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+      <button type="button" onclick="document.getElementById('loginModal').style.display='none'" class="cancelbtn">Cancel</button>
       <input type="submit" class="submit" name="Login">
     </div>
   </form>
 </div>
 
-<div id="id02" class="modal">
+<div id="signUpModal" class="modal">
   
     <form class="modal-content animate" action="/action_page.php" method="post">
       <h2>Sign Up</h2>
@@ -221,7 +224,7 @@ h2{
       </div>
   
       <div class="container">
-        <button type="button" onclick="document.getElementById('id02').style.display='none'" class="cancelbtn">Cancel</button>
+        <button type="button" onclick="document.getElementById('signUpModal').style.display='none'" class="cancelbtn">Cancel</button>
         <input type="submit" class="submit" name="Sign Up">
       </div>
     </form>
@@ -229,8 +232,8 @@ h2{
 
 <script>
 // Get the modal
-var modal = document.getElementById('id01');
-var modal2 = document.getElementById('id02');
+var modal = document.getElementById('logInModal');
+var modal2 = document.getElementById('signUpModal');
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
