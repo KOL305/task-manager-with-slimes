@@ -1,14 +1,15 @@
-.submitBtn {
-    background: linear-gradient(180deg, #000000 -14.74%, rgba(41, 41, 41, 0.6) 132.63%);
-    box-shadow: 6.19761px 3.54149px 16.8221px rgba(0, 0, 0, 0.54);
-    width: 6em;
-    height: 2.5em;
-    border-radius: 0.5em;
-    border: none;
-    color: white;
-    font-family: Inter;
-    font-style: normal;
-    font-weight: bolder;
-    letter-spacing: -0.017em;
-    margin: auto;
+.navbar {
+text-align: center;
+padding-bottom: 0 !important;
 }
+.navbar-ul {
+    align-content: center;
+    margin: auto;
+    margin-top: 0 !important;
+}
+
+.logo {
+    color: #ffffff;
+    margin: 0;
+    margin-left: 0.5em;
+  }

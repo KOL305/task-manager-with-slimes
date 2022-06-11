@@ -1,3 +1,4 @@
+from functools import wraps
 from bson.objectid import ObjectId
 import datetime
 from flask import Flask, render_template, jsonify, request, redirect, session, abort, flash
@@ -34,6 +35,11 @@ def home():
 def tasks():
     if request.method == 'GET':
         return render_template('tasks.html')
+
+@app.route('/dashboard', methods=['GET','POST'])
+def dashboard():
+    if request.method == 'GET':
+        return render_template('dashboard.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
