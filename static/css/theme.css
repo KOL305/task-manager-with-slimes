@@ -2,6 +2,7 @@
 text-align: center;
 padding-bottom: 0 !important;
 }
+
 .navbar-ul {
     align-content: center;
     margin: auto;
@@ -12,4 +13,17 @@ padding-bottom: 0 !important;
     color: #ffffff;
     margin: 0;
     margin-left: 0.5em;
-  }
+}
+
+.nav_under:active {
+    border-bottom: 3px solid red;
+}
+
+.nav_under:hover {
+    border-bottom: 3px solid red;
+}
+
+.nav_link {
+    color:white !important;
+    font-family: 'Inter', sans-serif;
+}
