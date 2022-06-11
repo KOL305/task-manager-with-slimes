@@ -6,8 +6,16 @@
 body {font-family: Arial, Helvetica, sans-serif;}
 
 body{
-    background-color: #20bf55;
-    background-image: linear-gradient(315deg, #20bf55 0%, #01baef 74%);
+  margin:0;
+}
+
+.whole{
+  margin:100px,0,0,0;
+}
+
+body{
+  background-color: #2a2a72;
+  background-image: linear-gradient(315deg, #2a2a72 0%, #009ffd 74%);
 }
 
 /* Full-width input fields */
@@ -22,7 +30,6 @@ input[type=username], input[type=password] {
 
 /* Set a style for all buttons */
 button, .submit {
-  background-color: green;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -132,7 +139,6 @@ span.psw {
 
 nav {
   overflow: auto;
-  background-color: darkcyan;
 }
 
 nav button:hover {
@@ -140,7 +146,6 @@ nav button:hover {
 }
 
 nav button{
-    background-color: darkcyan;
     margin: 0px 0px;
     font-size: 110%;
 }
@@ -160,11 +165,43 @@ h2{
   text-align: center;
 }
 
+ul li button{
+  background-color: transparent;
+}
+
+main{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+}
+      
+main div{
+  text-align: center;
+  margin: 1.5rem 1rem 0.4rem 1rem;
+  padding: 1.5rem;
+  color: white;
+}
+
+.now{
+  text-align: center;
+  display:grid;
+  grid-column: 1 / -1;
+}
+
+.nowb{
+  margin:auto;
+  color: rgb(51, 91, 200);
+  font-size: 120%;
+  padding: 10px 26px;
+  border-radius: 12px;
+}
+
 
 </style>
 </head>
 <body>
 
+<div class="whole">
 <nav>
     <ul>
       <li style="float:right"><button onclick="document.getElementById('signUpModal').style.display='block'" style="width:auto;">Sign Up</button></li>
@@ -172,20 +209,27 @@ h2{
     </ul> 
   </nav>
 
-  <ul id="menu"> 
-    <li id="macaron"><img src="images/macarons.jpg" alt="Eevee Macarons" /><h3>Poké Macarons..........$12.99 </h3>
-    Cute and sweet Pokémon macarons! You have the choice of Eevee, Pikachu, or Pokeballs! Comes in 6 per serving.</li>
-    <li id="cookie"><h3>Poké Cookies...........$9.99</h3>
-    Crispy vinilla cookies in form of Pikachu and the original Pokeball! Comes in 4 per serving. </li> 
-    <li id="cupcake"><img src="images/pikachuCupcake.jpg" alt="Pikachu Cupcake" /><h3>Poké Cupcakes..........$12.99</h3>
-    Spongy, soft, and crunchy cupcakes! vinilla flavored Pikachus and chocolate flavored Eevees. Comes in 4 per serving, your choice of Pikachu or Eevee or both!</li>
-    <li id="icecream"><h3>Poké ice-cream.........$4.99</h3>
-    Rich, sweet, creamy one scope vinilla ice-cream with chocolate covering made in the shape of pikachu, balbasour, charmander, or squritle on top of a crispy waffle cone. Comes in one per serving.</li>
-    <li id="donut"><img src="images/donut.jpg" alt="Pokemon Donuts" /><h3>Poké donuts..........$18.99</h3>
-    Sweet, fluffy donut with cream covering in the form of pikachu and the original pokéball! Comes in half a dozen. Your choice of which one! </li> 
-    <li id="mousse"><h3>Poké mousse cakes.........$12.99 </h3>
-    Adorable, delicous ghost pokémon mousse cakes. Comes in pairs of Gengar and Litwick or Goomy and Gulpin!</li>
-  </ul>
+  <main> 
+    <div id="linkClick">
+      <h2>Complete Tasks</h2>
+      <img src="linkClickHome.jpg" alt="Link Click cover" />
+    </div>
+    <div id="cellsAtWork">
+      <h2>Earn Coins</h2>
+      <img src="cellsAtWorkHome.jpg" alt="Cells At Work cover" />
+        <br />
+    </div>
+    <div id="pokemon">
+      <h2>Customize Your Own Slime</h2>
+      <img src="pokemonHome.jpg" alt="Pokémon cover" />
+      <br />
+      <br />
+    </div>
+
+    <div class="now">
+      <button class="nowb" onclick="document.getElementById('id02').style.display='block'" style="width:auto;"><h3>Sign Up Now!</h3></button>
+    </div>
+  </main>
 
 
 <div id="loginModal" class="modal">
@@ -229,6 +273,7 @@ h2{
       </div>
     </form>
   </div>
+</div>
 
 <script>
 // Get the modal
