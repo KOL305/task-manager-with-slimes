@@ -1,121 +1,133 @@
-var notes = [];
+var tasks = [];
 var cardID = 0;
-//localStorage{} --> "Notes" --> notes[] --> {cardId: note}
+//localStorage{} --> "tasks" --> tasks[] --> {cardId: task}
 
 //Bugs:
     //Delete Function Buggy
 document.getElementById("page").addEventListener("load", loadData());
 
-function addNote() {
-    var note = {}
-    note["heading"] = document.getElementById("heading").value;
-    note["link"] = document.getElementById("link").value;
-    note["description"] = document.getElementById("description").value;
-    note["font"] = document.getElementById("font").value;
-    note["bg-color"] = document.getElementById("bg-color").value;
-    note["fg-color"] = document.getElementById("fg-color").value;
-    createCard(note,cardID);
-    notes.push(note);
-    localStorage.setItem("Notes", JSON.stringify(notes));
+function addTask() {
+    var task = {}
+    task["title"] = document.getElementById("title").value;
+    task["description"] = document.getElementById("description").value;
+    task["duetime"] = document.getElementById("duetime").value;
+    task["difficulty"] = document.getElementById("difficultyBar").value;
+    createCard(task,cardID);
+    tasks.push(task);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
     cardID++;
 
-    alert("Note Updated");   
+    alert("Task Updated");   
 }
 
-function createCard(note, cardID) {
-    var noteDiv = document.createElement("div");
-    noteDiv.classList.add("card");
-    noteDiv.classList.add("text-left");
-    noteDiv.style["background-color"] = note["bg-color"];
-    noteDiv.setAttribute("id",cardID);
+function createCard(task, cardID) {
+    var taskDiv = document.createElement("div"); // Creates container for task
+    taskDiv.classList.add("card"); // div styling
+    taskDiv.classList.add("text-left");
+    taskDiv.style["border"] = "2px solid black"; // sets border color based on difficulty
+    if (task["difficultyBar"] == 0) {
+    taskDiv.style["border-color"] = 'green';
+    }
+    else if (task["difficultyBar"] == 1) {
+        taskDiv.style["border-color"] = 'lightgreen';
+    }
+    else if (task["difficultyBar"] == 2) {
+    taskDiv.style["border-color"] = 'yellow';
+    }
+    else if (task["difficultyBar"] == 3) {
+        taskDiv.style["border-color"] = 'orange';
+    }
+    else if (task["difficultyBar"] == 4) {
+        taskDiv.style["border-color"] = 'red';
+    }
+    taskDiv.setAttribute("id",cardID); // sets div id
 
-    var noteBodyDiv = document.createElement("div");
-    noteBodyDiv.classList.add("card-body");
+    var taskBodyDiv = document.createElement("div"); // creates div for task content
+    taskBodyDiv.classList.add("card-body"); // div styling
 
-    var noteHeadingRow = document.createElement("div");
-    noteHeadingRow.classList.add("row");
+    var TaskTitleRow = document.createElement("div");
+    TaskTitleRow.classList.add("row");
 
-    var noteHeadingColOne = document.createElement("div");
-    noteHeadingColOne.classList.add("col-11");
+    var TaskTitleColOne = document.createElement("div");
+    TaskTitleColOne.classList.add("col-11");
 
-    var noteHeading = document.createElement("h1");
-    noteHeading.classList.add("card-title");
-    noteDiv.classList.add(note["font"]);
-    noteHeading.style["color"] = note["fg-color"];
-    noteHeading.textContent = note["heading"];
+    var TaskTitle = document.createElement("h1");
+    TaskTitle.classList.add("card-title");
+    // taskDiv.classList.add(task["font"]); -- change font?
+    TaskTitle.textContent = task["title"];
     
 
-    var noteHeadingColTwo = document.createElement("div");
-    noteHeadingColTwo.classList.add("col-1");
+    var TaskTitleColTwo = document.createElement("div"); // creates div to contain delete/complete
+    TaskTitleColTwo.classList.add("col-1");
 
-    var noteDeleteButton = document.createElement("button");
-    noteDeleteButton.classList.add("btn");
-    noteDeleteButton.classList.add("btn-danger");
-    noteDeleteButton.setAttribute("onclick",`deleteCard(${cardID})`)
+    var taskDeleteButton = document.createElement("button"); // delete task button
+    taskDeleteButton.classList.add("btn");
+    taskDeleteButton.classList.add("btn-danger");
+    taskDeleteButton.setAttribute("onclick",`deleteCard(${cardID})`)
 
-    var noteDeleteIcon = document.createElement("i");
-    noteDeleteIcon.classList.add("fa");
-    noteDeleteIcon.classList.add("fa-trash");
+    var taskDeleteIcon = document.createElement("i");
+    taskDeleteIcon.classList.add("fa");
+    taskDeleteIcon.classList.add("fa-trash");
 
-    var noteLink = document.createElement("a");
-    noteLink.classList.add("card-link");
-    noteLink.href = note["link"];
-    noteLink.contentEditable = "false";
-    noteLink.textContent = note["link"];
-    noteLink.setAttribute("id",`link${cardID}`)
+    var taskLink = document.createElement("a");
+    taskLink.classList.add("card-link");
+    taskLink.href = task["link"];
+    taskLink.contentEditable = "false";
+    taskLink.textContent = task["link"];
+    taskLink.setAttribute("id",`link${cardID}`)
 
-    var noteEditLinkButton = document.createElement("button");
-    noteEditLinkButton.classList.add("btn");
-    noteEditLinkButton.classList.add("bg-transparent");
-    noteEditLinkButton.classList.add("bg-outline-light");
-    noteEditLinkButton.classList.add("mx-1");
-    noteEditLinkButton.setAttribute("onclick",`editLink('link${cardID}')`)
+    var taskEditLinkButton = document.createElement("button");
+    taskEditLinkButton.classList.add("btn");
+    taskEditLinkButton.classList.add("bg-transparent");
+    taskEditLinkButton.classList.add("bg-outline-light");
+    taskEditLinkButton.classList.add("mx-1");
+    taskEditLinkButton.setAttribute("onclick",`editLink('link${cardID}')`)
 
-    var noteEditLinkIcon = document.createElement("i");
-    noteEditLinkIcon.classList.add("fa");
-    noteEditLinkIcon.classList.add("fa-pencil");
+    var taskEditLinkIcon = document.createElement("i");
+    taskEditLinkIcon.classList.add("fa");
+    taskEditLinkIcon.classList.add("fa-pencil");
 
-    var noteDescriptionDiv= document.createElement("div");
-    noteDescriptionDiv.classList.add("card-text");
-    noteDiv.classList.add(note["font"]);
-    noteDescriptionDiv.style["color"] = note["fg-color"];
+    var taskDescriptionDiv= document.createElement("div");
+    taskDescriptionDiv.classList.add("card-text");
+    taskDiv.classList.add(task["font"]);
+    taskDescriptionDiv.style["color"] = task["fg-color"];
 
-    var noteDescription = document.createElement("p");
-    noteDescription.textContent = note["description"];
-
-
-    noteHeadingColOne.append(noteHeading);
-
-    noteDeleteButton.append(noteDeleteIcon);
-    noteHeadingColTwo.append(noteDeleteButton);
-
-    noteHeadingRow.append(noteHeadingColOne);
-    noteHeadingRow.append(noteHeadingColTwo);
-
-    noteEditLinkButton.append(noteEditLinkIcon);
-
-    noteDescriptionDiv.append(noteDescription);
-
-    noteBodyDiv.append(noteHeadingRow);
-    noteBodyDiv.append(noteLink);
-    noteBodyDiv.append(noteEditLinkButton);
-    noteBodyDiv.append(noteDescriptionDiv);
-
-    noteDiv.append(noteBodyDiv);
+    var taskDescription = document.createElement("p");
+    taskDescription.textContent = task["description"];
 
 
-    var notesList = document.getElementById("notesList");
-    notesList.prepend(noteDiv);
+    TaskTitleColOne.append(TaskTitle);
+
+    taskDeleteButton.append(taskDeleteIcon);
+    TaskTitleColTwo.append(taskDeleteButton);
+
+    TaskTitleRow.append(TaskTitleColOne);
+    TaskTitleRow.append(TaskTitleColTwo);
+
+    taskEditLinkButton.append(taskEditLinkIcon);
+
+    taskDescriptionDiv.append(taskDescription);
+
+    taskBodyDiv.append(TaskTitleRow);
+    taskBodyDiv.append(taskLink);
+    taskBodyDiv.append(taskEditLinkButton);
+    taskBodyDiv.append(taskDescriptionDiv);
+
+    taskDiv.append(taskBodyDiv);
+
+
+    var tasksList = document.getElementById("tasksList");
+    tasksList.prepend(taskDiv);
 }
 
 function deleteCard(deleteID) {
-    var deletedNote = document.getElementById(deleteID);
-    deletedNote.remove();
-    notes.splice(deleteID,1);
-    console.log(notes);
+    var deletedTask = document.getElementById(deleteID);
+    deletedTask.remove();
+    tasks.splice(deleteID,1);
+    console.log(tasks);
     cardID--;
     console.log(cardID);
-    localStorage.setItem("Notes",JSON.stringify(notes));
+    localStorage.setItem("Tasks",JSON.stringify(tasks));
 }
 
 function editLink(linkID) {
@@ -124,8 +136,8 @@ function editLink(linkID) {
     console.log(link.textContent)
     var newLink = document.getElementById(linkID).textContent;
     link.setAttribute("href", newLink);
-    notes[cardID]["link"] = newLink;
-    localStorage.setItem("Notes",JSON.stringify(notes));
+    tasks[cardID]["link"] = newLink;
+    localStorage.setItem("Tasks",JSON.stringify(tasks));
     link.contentEditable = (link.contentEditable == "false")? "true":"false";
 }
 
@@ -134,14 +146,14 @@ function loadData() {
     try {
         console.log("There is Data");
         
-        notes = JSON.parse(localStorage.getItem("Notes"))
-        for (let i=0; i<notes.length; i++) {
-            createCard(notes[i],i);
+        tasks = JSON.parse(localStorage.getItem("Tasks"))
+        for (let i=0; i<tasks.length; i++) {
+            createCard(tasks[i],i);
             cardID++
         }
     }
     catch (e) {
-        localStorage.setItem("Notes",JSON.stringify(notes));
+        localStorage.setItem("Tasks",JSON.stringify(tasks));
         console.log("No Data");
     }
 }

@@ -1,95 +1,97 @@
-<!doctype html>
-<html lang="en">
+{% extends 'base.html' %}
+{% block style %}
 <style>
-  body{
-    background-color: #772f1a;
-    background-image: linear-gradient(315deg, #772f1a 0%, #f2a65a 74%);
-  }
-
-  .text-input{
-    width: 100%;
-  }
-
   div{
     text-align: left;
   }
 </style>
+{% endblock %}
 
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <title>Tasks Tracker</title>
-</head>
-
-<body>
-    <div class="container" id="page">
-        <div class="text-center">
-            <h1>My Tasks</h1>
-            <div class="row">
-                <div class="col-6">
-                    <label for="Title">Title of Task:</label>
-                    <input type="text" class="form-control" id="Title" name="Title" placeholder="Title">
-                </div>
-            </div>
-            <br>
-            <div>
-            <label for="difficultyBar">Description</label>
-            <textarea class="form-control" id="description" name="description" placeholder="Description"></textarea>
-            <br>
-            </div>
+{% block content %}
+<div class="container" id="page">
+    <div class="text-center">
+        <h1 style="color:white;" class="bold">My Tasks</h1>
+        <div class="row">
             <div class="col-6">
-              <label for="duetime">Due (date and time):</label>
-              <br>
-              <input class="form-control" type="datetime-local" id="duetime" name="duetime">
-              <br>
+                <label style="color:white;" for="Title">Title of Task:</label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="Title" required>
             </div>
-            <div>
-              <label for="difficultyBar">Difficulty</label><br>
-              <input type="range" max="4" min="0" id="difficultyBar" placeholder="Urgency" class="text-input" style="opacity: 1" required/>
-              <br>
-            </div>
-            <div class="d-grid">
-                <br>
-                <button type="button" class="btn btn-primary" onclick="addNote()">Add Note</button>
-            </div>
-            <br>
+        </div>
         <br>
+        <div>
+        <label style="color:white;" for="difficultyBar">Description</label>
+        <textarea class="form-control" id="description" name="description" placeholder="Description" required></textarea>
+        <br>
+        </div>
+        <div class="col-6">
+            <label style="color:white;" for="duetime">Due (date and time):</label>
+            <br>
+            <input class="form-control" type="datetime-local" id="duetime" name="duetime" required>
+            <br>
+        </div>
+        <div>
+            <label style="color:white;" for="difficultyBar">Difficulty</label><br>
+            <input type="range" max="4" min="0" id="difficultyBar" style="width:100%;" required/>
+            <br>
+        </div>
+        <div class="d-grid">
+            <br>
+            <button type="button" class="btn btn-primary" onclick="addTask()">Add Task</button>
+        </div>
+        <br>
+    <br>
 
-        <div id="notesList" class="container">
-            <!-- <div class="card text-left" style="background-color: #cccccc">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-11">
-                            <h1 class="card-title">Heading</h1>
-                        </div>
-                        <div class="col-1">
-                            <button class="btn btn-danger" type="button"><i class="fa fa-trash"></i></button>
-                        </div>
+    <div id="notesList" style="width:70vw;" class="container">
+        <div class="card" style="background-color: #FFEEB0">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-8">
+                        <h1 class="card-title">Heading</h1>
                     </div>
-                    <a href="google.com" class="card-link" contenteditable=true>google</a>
+                    <div class="col-4">
+
+                        <button style="float:right;" class="btn btn-success" type="button"><img src="{{ url_for('static', filename='images/check-lg.svg') }}"></i></button>
+                        <button style="float:right;" class="btn btn-danger" type="button"><img src="{{ url_for('static', filename='images/trash-fill.svg') }}"></button>
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col">
+                        <p>due date</p>
+                    </div>
+                    <div class="col">
+                        <p>difficulty</p>
+                    </div>
+                    <div class="col-2">
+                        <p style="float:right;" class="mx-1">5</p>
+                        <img src="{{ url_for('static', filename='images/coin.svg') }}" style="float:right;" class="mx-0">
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col">
+                        <p>notes</p>
+                    </div>
+                </div>
+                <!-- <div class="row">
+                    <div class="col-6 bg-primary">
+                        <a href="google.com" class="card-link" contenteditable=true>google</a>
                     <button class="btn bg-transparent bg-outline-light">
+                    </div>
                         <i class="fa fa-pencil"></i>
                     </button>
-                    <div class="card-text" style="color: #737373;">
-                        <p>body</p>
+                    <div class="col-6 bg-secondary">
+                        <div class="card-text" style="color: #737373;">
+                            <p>body</p>
+                        </div>
                     </div>
                 </div>
-            </div> -->
+                    <div class="col">
+                        
+                    </div> -->
+            </div>
         </div>
-
-    </div>
-
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
-        crossorigin="anonymous"></script>
-    <script src="../static/js/tasks.js"></script> 
-</body>
-
-</html>
+    </div><br><br>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="../static/js/tasks.js"></script> 
+{% endblock %}
