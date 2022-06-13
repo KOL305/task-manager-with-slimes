@@ -15,9 +15,9 @@
     </head>
     <body id="webpage">
         <span style="font-family: 'Inter', sans-serif;">
-            <div class="modal fade" id="loginModal" tabindex="-1">
+            <div class="modal fade" id="logInModal" tabindex="-1">
                 <div class="modal-dialog">
-                    <form action="/login" method="post" class="modal-content">
+                    <form id="loginForm" action="/login" method="post" class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title bold">Log Back Into Your Account</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -25,22 +25,23 @@
                         <div class="modal-body">
                                 <div class="container">
                                     <img src="{{ url_for('static', filename='images/person-fill.svg') }}">
-                                    <input type="text" placeholder="Enter Username" name="username-input" class="form_box" required><br><br>
-                            
+                                    <input type="text" placeholder="Enter Username" name="username-input" class="form_box" v-model="l_username" required><br>
+                                    <p id="lUserMsg" style="color:red !important;"></p><br>
                                     <img src="{{ url_for('static', filename='images/key-fill.svg') }}">
-                                    <input type="password" placeholder="Enter Password" name="password-input" class="form_box" required><br>
+                                    <input type="password" placeholder="Enter Password" name="password-input" class="form_box" v-model="l_password" required><br>
+                                    <p id="lPassMsg" style="color:red !important;"></p><br>
                                 </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <input type="submit" class="btn btn-success" value="Login"></button>
+                            <input type="button" class="btn btn-success" value="Login" @click=submit(l_username,l_password)></button>
                         </div>
                     </form>
                 </div>
             </div>
             <div class="modal fade" id="signUpModal" tabindex="-1">
                 <div class="modal-dialog">
-                    <form action="/signup" method="post" class="modal-content">
+                    <form action="/signup" method="post" class="modal-content" id="signupForm">
                         <div class="modal-header">
                             <h5 class="modal-title bold">Create A New Account</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -48,18 +49,19 @@
                         <div class="modal-body">
                                 <div class="container">
                                     <img src="{{ url_for('static', filename='images/person-fill.svg') }}">
-                                    <input type="text" placeholder="Enter Username" name="username-input" class="form_box" required><br><br>
-    
+                                    <input type="text" placeholder="Enter Username" name="username-input" class="form_box" v-model="s_username"required><br>
+                                    <p id="sUserMsg" style="color:red !important;" v-if="sUserError">username already in use</p><br>
                                     <img src="{{ url_for('static', filename='images/key-fill.svg') }}">
-                                    <input type="password" placeholder="Enter Password" name="password-input" class="form_box" required><br><br>
-    
+                                    <input type="password" placeholder="Enter Password" name="password-input" class="form_box" v-model="s_password"required><br>
+                                    <p id="sPassMsg" style="color:red !important;" v-if="sPassError">passwords do not match</p><br>
                                     <img src="{{ url_for('static', filename='images/key-fill.svg') }}">
-                                    <input type="password" placeholder="Re-enter Password" name="confirm-password-input" class="form_box" required><br>
+                                    <input type="password" placeholder="Re-enter Password" name="confirm-password-input" class="form_box" v-model="s_cpassword"required><br>
+                                    <p id="sCPassMsg" style="color:red !important;" v-if="sPassError">passwords do not match</p><br>
                                 </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <input type="submit" class="btn btn-success" value="Sign Up"></button>
+                            <input type="button" class="btn btn-success" value="Sign Up" @click="submit(s_username,s_password,s_cpassword)"></button>
                         </div>
                     </form>
                 </div>
@@ -93,22 +95,30 @@
                         {% if session['logged_in'] %}
                         <a type="button" class="nav_button mx-2 p-1" data-bs-toggle="modal" data-bs-target="#logOutModal">Log Out</a>
                         {% else %}
-                        <a type="button" class="nav_button mx-3 p-1" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                        <a type="button" class="nav_button mx-3 p-1" data-bs-toggle="modal" data-bs-target="#logInModal">Login</a>
                         <a type="button" class="nav_button mx-3 p-1" data-bs-toggle="modal" data-bs-target="#signUpModal">Sign Up</a>
                         {% endif %}
                         {% endblock %}
                     </div>
                 </div>
             </nav>
+            {% for message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{message[0]}} d-flex justify-content-between alert-dismissible show" style="height: 60px;" role="alert">
+                <p>{{message[1]}}</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
             {% block content %}{% endblock %}
-
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-            <script type="text/javascript">
+            <script src="https://unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
+            <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+            <script type="text/javascript"> //Finds which page is rendered and changes bg color based on it
                 var url = document.createElement('a');
                 url.href = window.location.href;
                 var page = document.getElementById('webpage');
-                console.log(url.pathname);
                 if (url.pathname == '/dashboard'){
                     page.style['background'] = "linear-gradient(315deg, #2a2a72 0%, #009ffd 74%)";
                     page.style['background-attachment'] = true;
@@ -117,9 +127,114 @@
                     page.style['background'] = "linear-gradient(315deg, #2a2a72 0%, #009ffd 74%)";
                     page.style['background-attachment'] = true;
                 }
+
+
+                var loginApp = new Vue({ //Vue Apps
+                    el: "#loginForm",
+                    delimiters: ["[[", "]]"],
+                    data() {
+                        return {
+                            lUserError: false,
+                            lPassError: false,
+                            l_username: "",
+                            l_password: "",
+                        };
+                    },
+                    methods: {
+                    submit(l_username, l_password) {
+                        axios.post("/login",
+                        {
+                            username: this.l_username,
+                            password: this.l_password,
+                        },
+                        {headers:{'Content-Type': 'application/json'}}).then(function (response) {
+                        console.log('a')
+                        this.lUserError = false;
+                        this.lPassError = false;
+                        if (response.data.redirect) {
+                            console.log('b')
+                            window.location.href = response.data.redirect;
+                        }
+                        else {
+                            // let uMsg = document.getElementById['l-username-input-msg'];
+                            // let pMsg = document.getElementById['l-password-input-msg'];
+                            if (response.data.error = 1) {
+                                console.log('c')
+                                this.lUserError = true;
+                                // uMsg.textContent = response.message;
+                                // pMsg.textContent = '';
+
+                            }
+                            else if (response.data.error == 2) {
+                                console.log('d')
+                                this.lPassError = true;
+                                // uMsg.textContent = '';
+                                // pMsg.textContent = response.message;
+                            }
+                        }
+                        });
+                    },
+                    },
+                });
+
+                var signupForm = new Vue({
+                    el: "#signupForm",
+                    delimiters: ["[[", "]]"],
+                    data() {
+                        return {
+                            sUserError: false,
+                            sPassError: false,
+                            s_username: "",
+                            s_password: "",
+                            s_cpassword: "",
+                        };
+                    },
+                    methods: {
+                    submit(s_username, s_password, s_cpassword) {
+                        console.log('data', s_username, s_password, s_cpassword);
+                        axios.post("/signup",
+                        {
+                            username: this.s_username,
+                            password: this.s_password,
+                            confirm_password: this.s_cpassword,
+                        },
+                        {headers:{'Content-Type': 'application/json'}}).then(function (response) {
+                        this.sUserError = false;
+                        this.sPassError = false;
+                        console.log('urlhostname',url.hostname);
+                        console.log('responseredirect',response.data.redirect)
+                        if (response.data.redirect) {
+                            window.location.href = response.data.redirect;
+                        }
+                        else {
+                            console.log(response);
+                            console.log('data', response.data);
+                            // console.log("a");
+                            // console.log(uMsg);
+                            // console.log("b");
+                            // uMsg.innerHTML = '';
+                            // console.log("ab");
+                            // pMsg.textContent = '';
+                            // cpMsg.textContent = '';
+                            // console.log("c")
+                            if (response.data.error = 1) {
+                                this.sUserError = true;
+                                
+                                // uMsg.textContent = response.message;
+                            }
+                            else if (reponse.data.error == 2) {
+                                this.sPassError = true;
+                                // pMsg.textContent = response.message;
+                                // cpMsg.textContent = response.message;
+                            }
+                        }
+                        });
+                    },
+                    },
+                });
             </script>
-                {% block scripts %}{% endblock %}
-            </div>
+
+            {% block scripts %}{% endblock %}
         </span>
     </body>
 </html>
