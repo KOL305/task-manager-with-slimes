@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block title %}Tasks{% endblock %}
 {% block style %}
 <style>
   div{
@@ -10,35 +10,36 @@
 {% block content %}
 <div class="container" id="page">
     <div class="text-center">
-        <h1 style="color:white;" class="bold">My Tasks</h1>
-        <div class="row">
-            <div class="col-6">
-                <label style="color:white;" for="Title">Title of Task:</label>
-                <input type="text" class="form-control" id="title" name="title" placeholder="Title" required>
+        <form action="/tasks" method="POST" id="createTaskForm">
+            <h1 style="color:white;" class="bold">My Tasks</h1>
+            <div class="row">
+                <div class="col-6">
+                    <label style="color:white;" for="Title">Title of Task:</label>
+                    <input type="text" class="form-control" id="title" name="title" v-model="title" placeholder="Title" required>
+                </div>
+                <div class="col-6">
+                    <label style="color:white;" for="duetime">Due (date and time):</label>
+                    <br>
+                    <input class="form-control" type="datetime-local" id="duetime" name="duetime" v-model="duetime" required>
+                    <br>
+                </div>
             </div>
-        </div>
-        <br>
-        <div>
-        <label style="color:white;" for="difficultyBar">Description</label>
-        <textarea class="form-control" id="description" name="description" placeholder="Description" required></textarea>
-        <br>
-        </div>
-        <div class="col-6">
-            <label style="color:white;" for="duetime">Due (date and time):</label>
+            <div>
+                <label style="color:white;" for="difficultyBar">Difficulty</label><br>
+                <input type="range" max="4" min="0" id="difficultyBar" style="width:100%;" v-model="difficulty" required/>
+                <br>
+            </div>
+            <div>
+                <label style="color:white;" for="notes">Notes</label>
+                <textarea class="form-control" id="notes" name="notes" placeholder="Add additional notes" v-model="notes"></textarea>
+                <br>
+                </div>
+            <div class="d-grid">
+                <br>
+                <button type="button" class="btn btn-primary" @click="submit(title,duetime,difficulty,notes)">Add Task</button>
+            </div>
             <br>
-            <input class="form-control" type="datetime-local" id="duetime" name="duetime" required>
-            <br>
-        </div>
-        <div>
-            <label style="color:white;" for="difficultyBar">Difficulty</label><br>
-            <input type="range" max="4" min="0" id="difficultyBar" style="width:100%;" required/>
-            <br>
-        </div>
-        <div class="d-grid">
-            <br>
-            <button type="button" class="btn btn-primary" onclick="addTask()">Add Task</button>
-        </div>
-        <br>
+        </form>
     <br>
 
     <div id="notesList" style="width:70vw;" class="container">
@@ -50,8 +51,8 @@
                     </div>
                     <div class="col-4">
 
-                        <button style="float:right;" class="btn btn-success" type="button"><img src="{{ url_for('static', filename='images/check-lg.svg') }}"></i></button>
-                        <button style="float:right;" class="btn btn-danger" type="button"><img src="{{ url_for('static', filename='images/trash-fill.svg') }}"></button>
+                        <button style="float:right;" class="btn btn-success" type="button"><img src="{{ url_for('static', filename='images/objects/check-lg.svg') }}"></i></button>
+                        <button style="float:right;" class="btn btn-danger" type="button"><img src="{{ url_for('static', filename='images/objects/trash-fill.svg') }}"></button>
                     </div>
                 </div>
                 <div class="row my-1">
@@ -63,7 +64,7 @@
                     </div>
                     <div class="col-2">
                         <p style="float:right;" class="mx-1">5</p>
-                        <img src="{{ url_for('static', filename='images/coin.svg') }}" style="float:right;" class="mx-0">
+                        <img src="{{ url_for('static', filename='images/objects/coin.svg') }}" style="float:right;" class="mx-0">
                     </div>
                 </div>
                 <div class="row my-1">
@@ -71,22 +72,6 @@
                         <p>notes</p>
                     </div>
                 </div>
-                <!-- <div class="row">
-                    <div class="col-6 bg-primary">
-                        <a href="google.com" class="card-link" contenteditable=true>google</a>
-                    <button class="btn bg-transparent bg-outline-light">
-                    </div>
-                        <i class="fa fa-pencil"></i>
-                    </button>
-                    <div class="col-6 bg-secondary">
-                        <div class="card-text" style="color: #737373;">
-                            <p>body</p>
-                        </div>
-                    </div>
-                </div>
-                    <div class="col">
-                        
-                    </div> -->
             </div>
         </div>
     </div><br><br>
@@ -94,4 +79,41 @@
 {% endblock %}
 {% block scripts %}
 <script src="../static/js/tasks.js"></script> 
+<script type="text/javascript">
+    var today = JSON.parse('{{today|tojson}}');
+    var duetimeInput=document.getElementById('duetime');
+    duetimeInput.min = today[0].toString()+"-"+today[1].toString()+"-"+today[2].toString()+"T00:00"; //Setting minimum date of duetime to today
+
+    var createTaskForm = new Vue({
+        el: "#createTaskForm",
+        delimiters: ["[[", "]]"],
+        data() {
+            return {
+                title: "",
+                duetime: "",
+                difficulty: 0,
+                notes: "",
+            };
+        },
+        methods: {
+        submit(title, duetime, difficulty, notes) {
+            axios.post("/tasks",
+            {
+                title: this.title,
+                duetime: this.duetime,
+                difficulty: this.difficulty,
+                notes: this.notes,
+            },
+            {headers:{'Content-Type': 'application/json'}}).then(function (response) {
+            if (response.data.redirect) {
+                window.location.href = response.data.redirect;
+            }
+            else {
+                alert("An Error Has Occurred. Please Try Again")
+            }
+            });
+        },
+        },
+    });
+</script>
 {% endblock %}
