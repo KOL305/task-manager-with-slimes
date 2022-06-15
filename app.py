@@ -28,6 +28,11 @@ def login_required(something):
 @app.route('/', methods=['GET','POST'])
 def home():
     if request.method == 'GET':
+        
+        if 'logged_in' in session and session["logged_in"]:
+            user = db.users.find_one({'_id': ObjectId(session["logged_in_id"])})
+            bal = user['balance']
+            return render_template('home.html', bal=bal)
         return render_template('home.html')
     elif request.method == 'POST':
         return render_template('home.html')
@@ -40,6 +45,8 @@ def tasks(uid):
     todaySplit = today.strftime("%Y-%m-%d-%H-%M").split("-")
     today = datetime.datetime.strptime(todaySplit[0]+"-"+todaySplit[1]+"-"+todaySplit[2]+"-"+todaySplit[3]+"-"+todaySplit[4], '%Y-%m-%d-%H-%M')
     if request.method == 'GET':
+        user = db.users.find_one({'_id': ObjectId(session["logged_in_id"])})
+        bal = user['balance']
         tasks = db.tasks.find({'u_id': session['logged_in_id'], 'complete': False}).sort([('duetime', pymongo.ASCENDING)])
         for task in tasks:
             if task['duetime'] < today: #Past due date
@@ -53,8 +60,8 @@ def tasks(uid):
             print("obj",str(task['_id']))
             task['_id'] = str(task['_id'])
         print (tasksList)
-        return render_template('tasks.html', tasks=tasksList, today=todaySplit)
-        
+        return render_template('tasks.html', tasks=tasksList, today=todaySplit, bal=bal)
+
     return render_template('home.html')
 
 @app.route('/addtask', methods=['POST'])
@@ -125,7 +132,9 @@ def completetask(uid):
 @login_required
 def dashboard(uid):
     if request.method == 'GET':
-        return render_template('dashboard.html')
+        user = db.users.find_one({'_id': ObjectId(session["logged_in_id"])})
+        bal = user['balance']
+        return render_template('dashboard.html', bal=bal)
 
 @app.route('/login', methods=['POST'])
 def login():
