@@ -69,41 +69,7 @@
         </form>
     <br>
 
-    <div id="taskList" style="width:80vw; max-width:85%;" class="container">
-        <div class="taskCard my-2">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-8">
-                        <h1 class="card-title">Heading</h1>
-                    </div>
-                    <div class="col-4">
-                        <button style="float:right;" class="btn btn-success"><img src="{{ url_for('static', filename='images/objects/check-lg.svg') }}"></button>
-                        <button style="float:right;" class="btn btn-danger"><img src="{{ url_for('static', filename='images/objects/trash-fill.svg') }}"></button>
-                    </div>
-                </div>
-                <div class="row my-1">
-                    <div class="col">
-                        <p style="float:left;">due date</p>
-                    </div>
-                    <div class="col bg-primary">
-                        <div class="" style="min-width:200px;">
-                            <p style="float:left; color:black;">Difficulty:</p>
-                            <div class="square" style="float:left;"></div>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <p style="float:right;" class="mx-1">5</p>
-                        <img src="{{ url_for('static', filename='images/objects/coin.svg') }}" style="float:right;" class="coin">
-                    </div>
-                </div>
-                <div class="row my-1">
-                    <div class="col">
-                        <p>notes</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div><br><br>
+    <div id="taskList" style="width:80vw; max-width:85%;" class="container"></div><br><br>
 </div>
 {% endblock %}
 {% block scripts %}
