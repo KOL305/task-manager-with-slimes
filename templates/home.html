@@ -21,7 +21,9 @@
         </div>
     </div>
     <br><br><br><br>
+    {% if not(session['logged_in']) %}
     <a class="btn btn-success p-3" data-bs-toggle="modal" data-bs-target="#signUpModal"><h3 class="bold">Sign Up Now!</h3></a>
+    {% endif %}
 </div>
 {% endblock %}
 {% block scripts %}

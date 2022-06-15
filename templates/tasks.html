@@ -1,97 +1,306 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block title %}Tasks{% endblock %}
 {% block style %}
 <style>
-  div{
+  #page div{
     text-align: left;
   }
+
+.taskCard{
+    margin-top: 30px;
+    margin-bottom: 30px;
+    background-color: #C3C3C3;
+    border: 1px solid #969696;
+    border-radius: 5px;
+}
+
+.square {
+    float: left;
+    margin-top: 3px;
+    margin-left: 6px;
+    height: 20px;
+    width: 20px;
+    background-color: black;
+}
+
+.coin {
+    margin-top: 4px;
+    margin-left: 0;
+    padding-left: 0;
+    margin-right: -1px;
+    padding-right: 0;
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container" id="page">
     <div class="text-center">
-        <h1 style="color:white;" class="bold">My Tasks</h1>
-        <div class="row">
-            <div class="col-6">
-                <label style="color:white;" for="Title">Title of Task:</label>
-                <input type="text" class="form-control" id="title" name="title" placeholder="Title" required>
+        <form action="/tasks" method="POST" id="createTaskForm">
+            <h1 style="color:white;" class="bold">My Tasks</h1>
+            <div class="row">
+                <div class="col-6">
+                    <label style="color:white;" for="Title">Title of Task:</label>
+                    <input type="text" class="form-control" id="title" name="title" v-model="title" placeholder="Title" required>
+                </div>
+                <div class="col-6">
+                    <label style="color:white;" for="duetime">Due (date and time):</label>
+                    <br>
+                    <input class="form-control" type="datetime-local" id="duetime" name="duetime" v-model="duetime" required>
+                    <br>
+                </div>
             </div>
-        </div>
-        <br>
-        <div>
-        <label style="color:white;" for="difficultyBar">Description</label>
-        <textarea class="form-control" id="description" name="description" placeholder="Description" required></textarea>
-        <br>
-        </div>
-        <div class="col-6">
-            <label style="color:white;" for="duetime">Due (date and time):</label>
+            <div>
+                <label style="color:white;" for="difficultyBar">Difficulty</label><br>
+                <input type="range" max="4" min="0" id="difficultyBar" style="width:100%;" v-model="difficulty" required/>
+                <br>
+            </div>
+            <div>
+                <label style="color:white;" for="notes">Notes</label>
+                <textarea class="form-control" id="notes" name="notes" placeholder="Add additional notes" v-model="notes"></textarea>
+                <br>
+                </div>
+            <div class="d-grid">
+                <br>
+                <button type="button" class="btn btn-primary" @click="submit(title,duetime,difficulty,notes)">Add Task</button>
+            </div>
             <br>
-            <input class="form-control" type="datetime-local" id="duetime" name="duetime" required>
-            <br>
-        </div>
-        <div>
-            <label style="color:white;" for="difficultyBar">Difficulty</label><br>
-            <input type="range" max="4" min="0" id="difficultyBar" style="width:100%;" required/>
-            <br>
-        </div>
-        <div class="d-grid">
-            <br>
-            <button type="button" class="btn btn-primary" onclick="addTask()">Add Task</button>
-        </div>
-        <br>
+        </form>
     <br>
 
-    <div id="notesList" style="width:70vw;" class="container">
-        <div class="card" style="background-color: #FFEEB0">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-8">
-                        <h1 class="card-title">Heading</h1>
-                    </div>
-                    <div class="col-4">
-
-                        <button style="float:right;" class="btn btn-success" type="button"><img src="{{ url_for('static', filename='images/check-lg.svg') }}"></i></button>
-                        <button style="float:right;" class="btn btn-danger" type="button"><img src="{{ url_for('static', filename='images/trash-fill.svg') }}"></button>
-                    </div>
-                </div>
-                <div class="row my-1">
-                    <div class="col">
-                        <p>due date</p>
-                    </div>
-                    <div class="col">
-                        <p>difficulty</p>
-                    </div>
-                    <div class="col-2">
-                        <p style="float:right;" class="mx-1">5</p>
-                        <img src="{{ url_for('static', filename='images/coin.svg') }}" style="float:right;" class="mx-0">
-                    </div>
-                </div>
-                <div class="row my-1">
-                    <div class="col">
-                        <p>notes</p>
-                    </div>
-                </div>
-                <!-- <div class="row">
-                    <div class="col-6 bg-primary">
-                        <a href="google.com" class="card-link" contenteditable=true>google</a>
-                    <button class="btn bg-transparent bg-outline-light">
-                    </div>
-                        <i class="fa fa-pencil"></i>
-                    </button>
-                    <div class="col-6 bg-secondary">
-                        <div class="card-text" style="color: #737373;">
-                            <p>body</p>
-                        </div>
-                    </div>
-                </div>
-                    <div class="col">
-                        
-                    </div> -->
-            </div>
-        </div>
-    </div><br><br>
+    <div id="taskList" style="width:80vw; max-width:85%;" class="container"></div><br><br>
 </div>
 {% endblock %}
 {% block scripts %}
-<script src="../static/js/tasks.js"></script> 
+<script type="text/javascript">
+    var today = JSON.parse('{{today|tojson}}');
+    var duetimeInput=document.getElementById('duetime');
+    duetimeInput.min = today[0].toString()+"-"+today[1].toString()+"-"+today[2].toString()+"T00:00"; //Setting minimum date of duetime to today
+
+    var createTaskForm = new Vue({
+        el: "#createTaskForm",
+        delimiters: ["[[", "]]"],
+        data() {
+            return {
+                title: "",
+                duetime: "",
+                difficulty: 0,
+                notes: "",
+            };
+        },
+        methods: {
+        submit(title, duetime, difficulty, notes) {
+            axios.post("/addtask",
+            {
+                title: this.title,
+                duetime: this.duetime,
+                difficulty: this.difficulty,
+                notes: this.notes,
+            },
+            {headers:{'Content-Type': 'application/json'}}).then(function (response) {
+            if (response.data.redirect) {
+                window.location.href = response.data.redirect;
+            }
+            else {
+                alert("An Error Has Occurred. Please Try Again")
+            }
+            });
+        },
+        },
+    });
+</script>
+<script type="text/javascript">
+    document.getElementById("page").addEventListener("load", loadData());
+
+    function loadData() {
+        console.log("apple");
+        var tasks = JSON.parse('{{tasks|tojson}}');
+        console.log(tasks);
+        tasks.forEach(function (task){
+            console.log(task);
+            createCard(task);
+        })
+    }
+    function createCard(task) {
+        var deadline = task['duetime'].split(' GMT')[0];
+        console.log(deadline);
+        var taskDueMsg = "Due: "+deadline; //Creates text for due date
+        var taskList = document.getElementById('taskList') // Retrieving Div that contains all tasks (container)
+
+        var taskDiv = document.createElement("div"); // Creates card div
+        taskDiv.classList.add("taskCard"); //card style
+        taskDiv.setAttribute("id","task-"+task['_id']); // sets card div id
+
+        var taskBodyDiv = document.createElement("div"); // creates div for task content
+        taskBodyDiv.classList.add("card-body"); // div styling
+
+        var taskHeadingRow = document.createElement("div"); //Creates first row for header
+        taskHeadingRow.classList.add("row");
+
+        var taskHeadingColOne = document.createElement("div"); //Creates left column
+        taskHeadingColOne.classList.add("col-7");
+
+        var taskTitle = document.createElement("h1"); //Creates task title
+        taskTitle.classList.add("card-title");
+        taskTitle.classList.add("semibold");
+        taskTitle.textContent = task["title"];
+
+        taskHeadingColOne.append(taskTitle); //Append title to col
+        taskHeadingRow.append(taskHeadingColOne); //Append col to row
+
+        var taskHeadingColTwo = document.createElement("div"); //Creates right column
+        taskHeadingColTwo.classList.add("col-5");
+
+        var taskCompleteButton = document.createElement("button"); //Creates complete button
+        taskCompleteButton.classList.add("btn");
+        taskCompleteButton.classList.add("btn-success");
+        taskCompleteButton.style['float'] = 'right';
+        taskCompleteButton.setAttribute("onclick", `completeTask("task-${task['_id']}")`);
+
+        var taskCompleteButtonIcon = document.createElement("img"); //Creates checkmark icon for complete button
+        taskCompleteButtonIcon.setAttribute("src", "{{ url_for('static', filename='images/objects/check-lg.svg') }}");
+
+        var taskDeleteButton = document.createElement("button"); //Creates delete button
+        taskDeleteButton.classList.add("btn");
+        taskDeleteButton.classList.add("btn-danger");
+        taskDeleteButton.style['float'] = 'right';
+        taskDeleteButton.setAttribute("onclick", `deleteTask("task-${task['_id']}")`);
+
+        var taskDeleteButtonIcon = document.createElement("img"); //Creates trashcan icon for delete button
+        taskDeleteButtonIcon.setAttribute("src", "{{ url_for('static', filename='images/objects/trash-fill.svg') }}");
+
+        taskCompleteButton.append(taskCompleteButtonIcon); //Append check to complete button
+        taskDeleteButton.append(taskDeleteButtonIcon); //Append trashcan to delete button
+        taskHeadingColTwo.append(taskCompleteButton); //Append complete button to col
+        taskHeadingColTwo.append(taskDeleteButton); //Append delete button to col
+        taskHeadingRow.append(taskHeadingColTwo); //Append col to row
+
+        var taskDetailsRow = document.createElement('div'); //Creates row for duetime, difficulty, and reward
+        taskDetailsRow.classList.add("row");
+        taskDetailsRow.classList.add("my-1");
+
+        var taskDetailsColOne = document.createElement('div'); //Creates col for due date
+        taskDetailsColOne.classList.add("col");
+
+        var taskDueDate = document.createElement('p'); //Creates p for due date
+        taskDueDate.classList.add('semibold');
+        if (task['late']) {
+            taskDueDate.style['color'] = 'red';
+        }
+        taskDueDate.innerHTML = taskDueMsg;
+
+        taskDetailsColOne.append(taskDueDate); //Append due date text to col
+        taskDetailsRow.append(taskDetailsColOne); //Append col to row
+
+        var taskDetailsColTwo = document.createElement('div'); //Creates col for difficulty
+        taskDetailsColTwo.classList.add("col");
+
+        var taskDifficultyDiv = document.createElement('div'); //Creates div for difficulty
+        taskDifficultyDiv.style['min-width'] = '110px';
+
+        var taskDifficulty = document.createElement('p'); //Creates p for difficulty
+        taskDifficulty.style['float'] = 'left';
+        taskDifficulty.classList.add('semibold');
+        taskDifficulty.innerHTML = "Difficulty:";
+
+        taskDifficultyColor = document.createElement('div'); //Creates square to show difficulty color
+        taskDifficultyColor.classList.add('square');
+        if (task["difficulty"] == 0) { //Changing square color based on difficulty
+            taskDifficultyColor.style["background-color"] = 'green';
+        }
+        else if (task["difficulty"] == 1) {
+            taskDifficultyColor.style["background-color"] = 'yellowgreen';
+        }
+        else if (task["difficulty"] == 2) {
+            taskDifficultyColor.style["background-color"] = 'yellow';
+        }
+        else if (task["difficulty"] == 3) {
+            taskDifficultyColor.style["background-color"] = 'orange';
+        }
+        else if (task["difficulty"] == 4) {
+            taskDifficultyColor.style["background-color"] = 'red';
+        }
+
+        taskDifficultyDiv.append(taskDifficulty); //Append difficulty text to col
+        taskDifficultyDiv.append(taskDifficultyColor); //Append color square
+        taskDetailsColTwo.append(taskDifficultyDiv); //Append div with difficulty info to col
+        taskDetailsRow.append(taskDetailsColTwo); //Append col to row
+
+        var taskDetailsColThree = document.createElement('div'); //Creates col for reward
+        taskDetailsColThree.classList.add("col-3");
+
+        var taskReward = document.createElement('p'); //Creates p for reward
+        taskReward.classList.add('semibold');
+        taskReward.classList.add('mx-1');
+        taskReward.style['float'] = 'right';
+        if (task['late']){
+            taskReward.style['color'] = 'red';
+        }
+        taskReward.innerHTML = task['reward'];
+
+        var taskRewardIcon = document.createElement('img'); //Creates icon for reward p
+        taskRewardIcon.classList.add("coin");
+        taskRewardIcon.style['float'] = 'right';
+        taskRewardIcon.setAttribute('src', "{{ url_for('static', filename='images/objects/coin.svg') }}");
+
+        taskDetailsColThree.append(taskReward); //Append reward text to col
+        taskDetailsColThree.append(taskRewardIcon); //Append reward icon to col
+        taskDetailsRow.append(taskDetailsColThree); //Append col to row
+
+        var taskNotesRow = document.createElement('div'); //Creates row for notes
+        taskNotesRow.classList.add('row');
+        taskNotesRow.classList.add('my-1');
+
+        var taskNotesCol = document.createElement('div'); //Creates col for notes
+        taskNotesCol.classList.add('col');
+        
+        var taskNotes = document.createElement('p'); //Creates p for notes
+        taskNotes.innerHTML = task['notes']
+
+        taskNotesCol.append(taskNotes); //Append notes to col
+        taskNotesRow.append(taskNotesCol); //Append col to row
+
+        taskBodyDiv.append(taskHeadingRow); //Append heading row to div
+        taskBodyDiv.append(taskDetailsRow); //Append details row to div
+        taskBodyDiv.append(taskNotesRow); //Append notes row to div
+
+        taskDiv.append(taskBodyDiv); //Append everything to card div
+
+        taskList.append(taskDiv); //Append task to container
+    }
+    function deleteTask(taskId) {
+        taskIdNum = taskId.split('-')[1]
+        console.log(taskIdNum)
+        axios.post("/deletetask",
+        {
+            action: "delete",
+            taskID: taskIdNum
+        },{headers:{'Content-Type': 'application/json'}}).then(function (response) {
+            if (response.data.error == 0) {
+                var task = document.getElementById(taskId);
+                task.remove();
+                alert("Task Successfully Deleted");
+            }
+            else {
+                alert("An Error Has Occurred. Please Try Again")
+            }
+        });
+    }
+    function completeTask(taskId) {
+        taskIdNum = taskId.split('-')[1]
+        axios.post("/completetask",
+        {
+            taskID: taskIdNum
+        },{headers:{'Content-Type': 'application/json'}}).then(function (response) {
+            if (response.data.error == 0) {
+                var task = document.getElementById(taskId);
+                task.remove();
+                alert("Task Reward Received");
+                window.location.href = response.data.redirect
+            }
+            else {
+                alert("An Error Has Occurred. Please Try Again");
+            }
+        });
+    }
+</script> 
 {% endblock %}

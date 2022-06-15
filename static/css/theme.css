@@ -81,3 +81,39 @@
     border-right:none;
     outline: none;
 }
+
+/* Hoverable Dropdown */
+.dropbtn {
+    background-color: #3498DB;
+    color: white;
+    width: 85px;
+    font-size: 16px;
+    border: none;
+}
+
+.dropup {
+  position: fixed;
+  bottom: 0;
+  right: 20px;
+  display: inline-block;
+  transition: bottom ease 1s;
+}
+
+.dropup-content {
+    display: block;
+    position: absolute;
+    background-color: #f1f1f1;
+    width: 85px;
+    z-index: 1;
+}
+
+.dropup:hover {
+    bottom: 70px;
+    transition: bottom ease 1s;
+}
+
+.dropup:hover .dropbtn {
+    background-color: #2980B9;
+}
+
+/* Other */
