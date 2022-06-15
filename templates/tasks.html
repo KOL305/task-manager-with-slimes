@@ -295,9 +295,10 @@
                 var task = document.getElementById(taskId);
                 task.remove();
                 alert("Task Reward Received");
+                window.location.href = response.data.redirect
             }
             else {
-                alert("An Error Has Occurred. Please Try Again")
+                alert("An Error Has Occurred. Please Try Again");
             }
         });
     }

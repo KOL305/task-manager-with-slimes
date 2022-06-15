@@ -121,9 +121,10 @@ def completetask(uid):
         if task:
             user = db.users.find_one({'_id': ObjectId(session['logged_in_id'])})
             if user:
+                bal = user['balance']+task['reward']
                 db.tasks.update_one(task, {'$set': {'complete': True}})
-                db.users.update_one(user, {'$set': {'balance': user['balance']+task['reward']}})
-                return jsonify({'error': 0})
+                db.users.update_one(user, {'$set': {'balance': bal}})
+                return jsonify({'error': 0, 'redirect': '/tasks'})
             return jsonify({'error': 1})
         return jsonify({'error': 1})
 
