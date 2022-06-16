@@ -18,6 +18,8 @@ body, html {
     height: 100%;
     float: left;
     border-collapse: collapse;
+    display: grid;
+    grid-template-rows: 15% auto auto;
 }
 
 .rightpane {
@@ -34,7 +36,7 @@ h1{
     text-align: center;
     background-color: rgba(236, 127, 47, 1);
     margin:0;
-    padding: 3rem;
+    padding: 1.5rem;
     position: relative;
 }
 
@@ -42,7 +44,7 @@ h1{
     position: relative;
     text-align: center;
     background-color: rgba(242, 166, 90, 1);
-    padding: 11px;
+    padding: 11px 0 0 0;
     margin:0;
 }
 
@@ -55,14 +57,14 @@ h1{
 .accessoriesGrid{
     display: grid;
     grid-template-columns: auto auto auto;
+    grid-template-rows: auto auto;
     background-color: rgba(242, 203, 126, 1);
-    height: 32%;
 }
 
 .accessories{
     text-align: center;
     background-color: rgba(242, 203, 126, 1);
-    padding: 11px;
+    padding: 11px 0 0 0;
     margin:0;
 }
 
@@ -88,8 +90,17 @@ h1{
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 80%;
+    width: 120%;
     height: auto;
+}
+
+ .center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 47%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 </style>
@@ -114,10 +125,11 @@ h1{
         </div>
 
         <div class="rightpane">
-            <img src="../static/images/yellow slime.gif">
+            <div class="center">
+                <img src="../static/images/yellow slime.gif">
+            </div>
         </div>
     </div>
 </body>
 </html>
-
 
