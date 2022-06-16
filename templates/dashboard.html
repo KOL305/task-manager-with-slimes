@@ -205,6 +205,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <script src="https://unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
 <script type="text/javascript">
+user = JSON.parse('{{user|tojson}}');
+usernameText = document.getElementById('user_name');
+usernameText.addEventListener("load", change_user_font_size(user['username'], usernameText));
+
 var app = new Vue({
     el: "#dashApp",
     delimiters: ["[[", "]]"],
@@ -236,9 +240,10 @@ var app = new Vue({
                     if (response.data.error == 1) {
                         usernameMsg.textContent = response.data.message;
                     } else {
-                        change_user_font_size(user['username'], usernameText);
+                        
                         name.innerHTML = username;
-                        showAlert(response.data.message);
+                        change_user_font_size(username.length, name);
+                        alert(response.data.message);
                     }
                 });
             }
@@ -273,7 +278,7 @@ var app = new Vue({
                     oldPassMsg.textContent = response.data.message;
                 }
                 } else {
-                showAlert(response.data.message);
+                alert(response.data.message);
                 }
             });
             }
@@ -329,10 +334,6 @@ function change_user_font_size(username, element){
 
     element.style['font-size'] = size;
 }
-
-user = JSON.parse('{{user|tojson}}');
-usernameText = document.getElementById('user_name');
-usernameText.addEventListener("load", change_user_font_size(user['username'], usernameText));
 
 completedTasksStatP = document.getElementById('completedTasksStat');
 lateTasksStatP = document.getElementById('lateTasksStat');
