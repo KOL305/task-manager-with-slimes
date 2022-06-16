@@ -109,7 +109,7 @@
                 </div>
             </nav>
             {% block content %}{% endblock %}
-            {% if session['logged_in'] %}}
+            {% if session['logged_in'] %}
             <div class="dropup">
                 <button class="dropbtn">^</button>
                 <div class="dropup-content text-center">
@@ -163,25 +163,21 @@
                             password: this.l_password,
                         },
                         {headers:{'Content-Type': 'application/json'}}).then(function (response) {
-                        console.log('a')
                         this.lUserError = false;
                         this.lPassError = false;
                         if (response.data.redirect) {
-                            console.log('b')
                             window.location.href = response.data.redirect;
                         }
                         else {
                             // let uMsg = document.getElementById['l-username-input-msg'];
                             // let pMsg = document.getElementById['l-password-input-msg'];
                             if (response.data.error = 1) {
-                                console.log('c')
                                 this.lUserError = true;
                                 // uMsg.textContent = response.message;
                                 // pMsg.textContent = '';
 
                             }
                             else if (response.data.error == 2) {
-                                console.log('d')
                                 this.lPassError = true;
                                 // uMsg.textContent = '';
                                 // pMsg.textContent = response.message;

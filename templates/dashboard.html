@@ -1,8 +1,426 @@
 {% extends 'base.html' %} {% block title %}Dashboard{% endblock %}
-{% block style %} {% endblock %}
-{% block content %}
-<p>hello</p>
+{% block style %}
+<style type="text/css">
+    .circle {
+        border: 3px solid;
+        border-color: #c5dcc2;
+        padding-bottom: 50%;
+        border-radius: 50%;
+        overflow: hidden;
+        max-width: 10vw;
+        max-height: 10vw;
+    }
+  
+    #pic {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+    }
+  
+    #hoverText {
+        margin: auto;
+    }
+  
+    .btn-dash {
+        box-shadow: 0px 1px 9px rgba(0, 0, 0, 0.25);
+    }
+  
+    .dashboard-border {
+        border: 3px solid;
+        border-color: #c5dcc2;
+        border-radius: 25px;
+    }
+  
+    .dashboard-grad {
+        background-image: linear-gradient(#a2c08b -5%, #b2d5df 100%);
+    }
+</style>
 {% endblock %}
-{% block scripts %}
+{% block content %}
+<div style="height: 85vh" class="row text-center mt-3 mx-0 px-0">
+<div class="col-3 dashboard-border dashboard-grad">
+    <div>
+    <div style="margin: auto; margin-top: 20px" class="circle" id="picDiv">
+        <img src="/static/images/objects/person-fill.svg" id="pic" />
+    </div>
+    <h1 id="user_name" class="mt-2 mb-3">{{user['username']}}</h1>
+    </div>
 
+    <ul class="nav flex-column nav-pills d-flex align-items-center" id="dashboard-tab" role="tablist">
+    <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
+        <button class="btn btn-dash" id="gallery-btn" type="button"
+        style="background-color: #c6dcc4; color: black" onclick="location.href='/gallery'">
+        Gallery
+        <img src="{{ url_for('static', filename='images/objects/person-fill.svg') }}" class="sign-up-icon" />
+        </button>
+    </li>
+    <br />
+    <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
+        <button class="btn btn-dash" id="upload-btn" type="button"
+        style="background-color: #c6dbcb; color: black" onclick="location.href='/upload'">
+        Upload
+        <img src="{{ url_for('static', filename='images/objects/check-lg.svg') }}" class="sign-up-icon" />
+        </button>
+    </li>
+    <br />
+    <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
+        <button class="btn btn-dash" id="stats-tab" style="background-color: #c9dbda; color: black"
+        data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab">
+        Stats
+        <img src="{{ url_for('static', filename='images/objects/coin-svg') }}" class="sign-up-icon" />
+        </button>
+    </li>
+    <br />
+    <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
+        <button class="btn btn-dash" id="profile-tab" style="background-color: #c9dbdf; color: black"
+        data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
+        Edit Profile
+        <img src="{{ url_for('static', filename='images/objects/key-fill.svg') }}" class="sign-up-icon" />
+        </button>
+    </li>
+    <br />
+    </ul>
+</div>
+<div class="col-9 dashboard-border dashboard-grad tab-content" id='tabContent'>
+    <div class="tab-pane fade active show" id="stats" role="tabpanel">
+    <br>
+    <div class="row">
+        <div class="col">
+        <h1 style="display:inline-block; vertical-align:top;"><b>Stats</b></h1>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="statsDropDownMenu" data-bs-toggle="dropdown">
+            All Time
+            </button>
+            <ul class="dropdown-menu">
+            <li><a class="dropdown-item" onclick="changeStats(allTimeStats, 'All Time')">All Time</a></li>
+            <li><a class="dropdown-item" onclick="changeStats(thisYearStats, 'This Year')">This Year</a></li>
+            <li><a class="dropdown-item" onclick="changeStats(lastYearStats, 'Last Year')">Last Year</a></li>
+            <li><a class="dropdown-item" onclick="changeStats(thisMonthStats, 'This Month')">This Month</a></li>
+            <li><a class="dropdown-item" onclick="changeStats(lastMonthStats, 'Last Month')">Last Month</a></li>
+            </ul>
+        </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+        <h3 class="semibold">Tasks Completed:</h3>
+        <p id="completedTasksStat"></p>
+        </div>
+        <div class="col">
+        <h3 class="semibold">Late:</h3>
+        <p id="lateTasksStat"></p>
+        </div>
+        <div class="col">
+        <h3 class="semibold">On Time:</h3>
+        <p id="onTimeTasksStat"></p>
+        </div>
+        <div class="col">
+        <h3 class="semibold">Coins Earned:</h3>
+        <p id="coinsStat"></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+        <h4>Total Scans:</h4>
+        <div>
+            <canvas id="completedTasksGraph" style="width:50%; height:10%;"></canvas>
+        </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+        <h4>Total coins:</h4>
+        <div>
+        <canvas id="coinsGraph" style="width:50%; height:10%;"></canvas>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="tab-pane fade" id="profile" role="tabpanel">
+    <br>
+    <h1 class="text-center"><b>Change Your Account Info</b></h1>
+    <div id="dashApp">
+        <label for="username-input">Change Username</label><br>
+        <input id="username-input" type="text" v-model="username" class="form-control">
+        <p id="username-input-Msg" style="color:red;"></p>
+
+        <button @click="changeUser()" class="btn btn-secondary">Submit</button>
+        <br>
+
+        <hr style="border:2px solid black; opacity:0.6;">
+
+        <label for="oldPass-input">Current Password</label><br>
+        <input id="oldPass-input" type="password" v-model="oldPass" class="form-control">
+        <p id="oldPass-input-Msg" style="color:red;"></p>
+
+        <label for="newPass-input">New Password</label><br>
+        <input id="newPass-input" type="password" v-model="newPass" class="form-control">
+        <p id="newPass-input-Msg" style="color:red;"></p>
+
+        <label for="confirmPass-input">Confirm New Password</label><br>
+        <input id="confirmPass-input" type="password" v-model="confirmPass" class="form-control">
+        <p id="confirmPass-input-Msg" style="color:red;"></p>
+
+        <button @click="changePass()" class="btn btn-secondary">Submit</button>
+
+        <hr style="border:2px solid black; opacity:0.6;">
+
+        <button data-bs-toggle="modal" data-bs-target="#deleteModal" class="btn btn-danger"
+        style="width:9em;">Delete Account</button>
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                <h5 class="modal-title" id="loginModalLabel">
+                    Are you sure?
+                </h5>
+                <p>This action is irreversable</p>
+                <button @click="deleteAcc()" type="button" class="btn btn-danger">
+                    Delete Account
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+    
+                </div>
+    
+            </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+</div>
+{% endblock %} {% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script src="https://unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
+<script type="text/javascript">
+  var app = new Vue({
+    el: "#dashApp",
+    delimiters: ["[[", "]]"],
+    data() {
+        return {
+            username: "",
+            oldPass: "",
+            newPass: "",
+            confirmPass: "",
+        };
+    },
+    methods: {
+        changeUser() {
+            var username = this.username;
+
+            var usernameMsg = document.getElementById("username-input-Msg");
+            var name = document.getElementById("user_name");
+
+            clearMsgs();
+
+            if (this.username === "" || this.username === " ") {
+                usernameMsg.textContent = "Invalid username";
+            } else {
+                $.ajax({
+                type: "POST",
+                url: "/dashboard",
+                data: JSON.stringify({
+                    requestType: "changeUsername",
+                    username: username,
+                }),
+                contentType: "application/json",
+                dataType: "json",
+                }).done(function (response) {
+                if (response["error"] == 1) {
+                    usernameMsg.textContent = response["message"];
+                } else {
+                    showAlert(response["message"]);
+                    name.innerHTML = username;
+                }
+                });
+            }
+        },
+
+        changePass() {
+            var oldPass = this.oldPass;
+            var newPass = this.newPass;
+            var confirmPass = this.confirmPass;
+
+            var oldPassMsg = document.getElementById("oldPass-input-Msg");
+            var newPassMsg = document.getElementById("newPass-input-Msg");
+            var confirmPassMsg = document.getElementById("confirmPass-input-Msg");
+
+            clearMsgs();
+
+            if (newPass.length < 6) {
+            newPassMsg.textContent =
+                "Password needs to be 6 characters or longer";
+            } else if (newPass != confirmPass) {
+            newPassMsg.textContent = "Password Does Not Match";
+            confirmPassMsg.textContent = "Password Does Not Match";
+            } else {
+            $.ajax({
+                type: "POST",
+                url: "/dashboard",
+                data: JSON.stringify({
+                requestType: "changePassword",
+                oldPass: oldPass,
+                newPass: newPass,
+                }),
+
+                contentType: "application/json",
+                dataType: "json",
+            }).done(function (response) {
+                if (response["error"] == 1) {
+                if (response["type"] == "oldPass") {
+                    oldPassMsg.textContent = response["message"];
+                }
+                } else {
+                showAlert(response["message"]);
+                }
+            });
+            }
+        },
+        deleteAcc() {
+            $.ajax({
+                type: 'POST',
+                url: '/dashboard',
+                data: JSON.stringify({
+                    "requestType": "deleteAccount",
+                }),
+
+                contentType: "application/json",
+                dataType: "json"
+                }).done(function (response) {
+                window.location.replace('/logout?type=deleteAccount');
+
+                });
+        },
+    }
+});
+
+function clearMsgs() {
+    var usernameMsg = document.getElementById("username-input-Msg");
+    var oldPassMsg = document.getElementById("oldPass-input-Msg");
+    var newPassMsg = document.getElementById("newPass-input-Msg");
+    var confirmPassMsg = document.getElementById("confirmPass-input-Msg");
+    var messages = [usernameMsg, oldPassMsg, newPassMsg, confirmPassMsg];
+    messages.forEach(function (element) {
+      element.textContent = "";
+    })
+}
+</script>
+
+<script type="text/javascript">
+completedTasksStatP = document.getElementById('completedTasksStat');
+lateTasksStatP = document.getElementById('lateTasksStat');
+onTimeTasksStatP = document.getElementById('onTimeTasksStat');
+coinsStatP= document.getElementById('coinsStat');
+
+console.log(haveStats);
+allTimeStats = JSON.parse('{{allTimeStats|tojson}}');
+console.log(allTimeStats);
+thisYearStats = JSON.parse('{{thisYearStats|tojson}}');
+lastYearStats = JSON.parse('{{lastYearStats|tojson}}');
+thisMonthStats = JSON.parse('{{thisMonthStats|tojson}}');
+lastMonthStats = JSON.parse('{{lastMonthStats|tojson}}');
+firstScanDate = allTimeStats['firstScanDate'];
+
+completedTasksStatP.innerHTML=allTimeStats['completedTasks'];
+lateTasksStatP.innerHTML=allTimeStats['lateTasks'];
+onTimeTasksStatP.innerHTML=allTimeStats['onTimeTasks'];
+coinsStatP.innerHTML=allTimeStats['coins'];
+
+var completedTasksGraph = new Chart("completedTasksGraph", {
+    type: "line",
+    data: {
+        labels: Object.keys(allTimeStats['dataset']),
+        datasets: [{
+            pointHitRadius: 5,
+            pointRadius: 3,
+            showLine: false,
+            backgroundColor: "rgba(0,0,0,1.0)",
+            data: Object.values(allTimeStats['dataset'])
+        }]
+    },
+    options: {
+        legend: {display: false},
+        scales: {
+            yAxes: [{
+                ticks: {
+                min: 0,
+                stepSize: 1,
+                suggestedMax: 6,
+                maxTicksLimit: 6
+            }
+            }]
+        },
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+var coinsGraph = new Chart("coinsGraph", {
+    type: "line",
+    data: {
+        labels: Object.keys(allTimeStats['cDataset']),
+        datasets: [{
+            pointHitRadius: 5,
+            pointRadius: 3,
+            showLine: false,
+            backgroundColor: "rgba(0,0,0,1.0)",
+            data: Object.values(allTimeStats['cDataset'])
+        }]
+    },
+    options: {
+        legend: {display: false},
+        scales: {
+            yAxes: [{
+                ticks: {
+                    min: 0,
+                    stepSize: 1,
+                    suggestedMax: 10,
+                    maxTicksLimit: 10
+                }
+            }]
+        },
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+function addData(chart, newLabel, newData) {
+    newLabel.forEach(function(label){
+        chart.data.labels.push(label);
+    })
+    chart.data.datasets.forEach((dataset) => {
+        newData.forEach(function(data){
+            dataset.data.push(data);
+        })
+    });
+    chart.update();
+}
+
+function removeData(chart) {
+    chartLength = chart.data.labels.length;
+    for (var i=0; i<chartLength; i++){
+        chart.data.labels.pop();
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data.pop();
+        });
+    }
+    chart.update();
+}
+function changeStats(newSet, setName){
+    removeData(completedTasksGraph);
+    removeData(coinsGraph);
+    addData(completedTasksGraph, Object.keys(newSet['dataset']), Object.values(newSet['dataset']));
+    addData(coinsGraph, Object.keys(newSet['cDataset']), Object.values(newSet['cDataset']));
+    document.getElementById("statsDropDownMenu").textContent = setName;
+    document.getElementById("completedTasksStat").textContent = newSet['completedTasks'];
+    document.getElementById("lateTasksStat").textContent = newSet['lateTasks'];
+    document.getElementById("onTimeTasksStat").textContent = newSet['onTimeTasks'];
+    document.getElementById("coinsStat").textContent = newSet['coins'];
+}
+
+</script>
 {% endblock %}
