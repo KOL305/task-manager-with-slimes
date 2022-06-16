@@ -34,51 +34,56 @@
     .dashboard-grad {
         background-image: linear-gradient(#a2c08b -5%, #b2d5df 100%);
     }
+
+    .list-icon {
+        padding-top:0;
+        padding-bottom: 3px;
+    }
 </style>
 {% endblock %}
 {% block content %}
 <div style="height: 85vh" class="row text-center mt-3 mx-0 px-0">
 <div class="col-3 dashboard-border dashboard-grad">
     <div>
-    <div style="margin: auto; margin-top: 20px" class="circle" id="picDiv">
-        <img src="/static/images/objects/person-fill.svg" id="pic" />
-    </div>
-    <h1 id="user_name" class="mt-2 mb-3">{{user['username']}}</h1>
+        <div style="margin: auto; margin-top: 20px" class="circle" id="picDiv">
+            <img src="/static/images/objects/person-fill.svg" id="pic"/>
+        </div>
+        <h1 id="user_name" style="font-size: 2vw;" class="semibold mt-2 mb-3 mx-0 px-0">{{user['username']}}</h1>
     </div>
 
     <ul class="nav flex-column nav-pills d-flex align-items-center" id="dashboard-tab" role="tablist">
-    <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
-        <button class="btn btn-dash" id="gallery-btn" type="button"
-        style="background-color: #c6dcc4; color: black" onclick="location.href='/gallery'">
-        Gallery
-        <img src="{{ url_for('static', filename='images/objects/person-fill.svg') }}" class="sign-up-icon" />
-        </button>
-    </li>
-    <br />
-    <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
-        <button class="btn btn-dash" id="upload-btn" type="button"
-        style="background-color: #c6dbcb; color: black" onclick="location.href='/upload'">
-        Upload
-        <img src="{{ url_for('static', filename='images/objects/check-lg.svg') }}" class="sign-up-icon" />
-        </button>
-    </li>
-    <br />
-    <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
-        <button class="btn btn-dash" id="stats-tab" style="background-color: #c9dbda; color: black"
-        data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab">
-        Stats
-        <img src="{{ url_for('static', filename='images/objects/coin-svg') }}" class="sign-up-icon" />
-        </button>
-    </li>
-    <br />
-    <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
-        <button class="btn btn-dash" id="profile-tab" style="background-color: #c9dbdf; color: black"
-        data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
-        Edit Profile
-        <img src="{{ url_for('static', filename='images/objects/key-fill.svg') }}" class="sign-up-icon" />
-        </button>
-    </li>
-    <br />
+        <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
+            <button class="btn btn-dash" id="task-btn" type="button"
+            style="background-color: #c6dcc4; color: black" onclick="location.href='/tasks'">
+            Tasks
+            <img src="{{ url_for('static', filename='images/objects/clipboard.svg') }}" class="list-icon" />
+            </button>
+        </li>
+        <br />
+        <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
+            <button class="btn btn-dash" id="shop-btn" type="button"
+            style="background-color: #c6dbcb; color: black" onclick="location.href='/shop'">
+            Shop
+            <img src="{{ url_for('static', filename='images/objects/cart2.svg') }}" class="list-icon" />
+            </button>
+        </li>
+        <br />
+        <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
+            <button class="btn btn-dash" id="stats-tab" style="background-color: #c9dbda; color: black"
+            data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab">
+            Stats
+            <img src="{{ url_for('static', filename='images/objects/bar-chart-line.svg') }}" class="list-icon" />
+            </button>
+        </li>
+        <br />
+        <li class="nav-item d-grid my-3" role="presentation" style="width: 80%">
+            <button class="btn btn-dash" id="profile-tab" style="background-color: #c9dbdf; color: black"
+            data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
+            Edit Profile
+            <img src="{{ url_for('static', filename='images/objects/person.svg') }}" class="list-icon" />
+            </button>
+        </li>
+        <br />
     </ul>
 </div>
 <div class="col-9 dashboard-border dashboard-grad tab-content" id='tabContent'>
@@ -197,7 +202,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <script src="https://unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
 <script type="text/javascript">
-  var app = new Vue({
+var app = new Vue({
     el: "#dashApp",
     delimiters: ["[[", "]]"],
     data() {
@@ -220,22 +225,18 @@
             if (this.username === "" || this.username === " ") {
                 usernameMsg.textContent = "Invalid username";
             } else {
-                $.ajax({
-                type: "POST",
-                url: "/dashboard",
-                data: JSON.stringify({
+                axios.post("/dashboard",
+                {
                     requestType: "changeUsername",
-                    username: username,
-                }),
-                contentType: "application/json",
-                dataType: "json",
-                }).done(function (response) {
-                if (response["error"] == 1) {
-                    usernameMsg.textContent = response["message"];
-                } else {
-                    showAlert(response["message"]);
-                    name.innerHTML = username;
-                }
+                    username: this.username,
+                },{headers:{'Content-Type': 'application/json'}}).then(function (response) {
+                    if (response.data.error == 1) {
+                        usernameMsg.textContent = response.data.message;
+                    } else {
+                        change_user_font_size(user['username'], usernameText);
+                        name.innerHTML = username;
+                        showAlert(response.data.message);
+                    }
                 });
             }
         },
@@ -258,42 +259,29 @@
             newPassMsg.textContent = "Password Does Not Match";
             confirmPassMsg.textContent = "Password Does Not Match";
             } else {
-            $.ajax({
-                type: "POST",
-                url: "/dashboard",
-                data: JSON.stringify({
+            axios.post("/dashboard",
+            {
                 requestType: "changePassword",
                 oldPass: oldPass,
                 newPass: newPass,
-                }),
-
-                contentType: "application/json",
-                dataType: "json",
-            }).done(function (response) {
-                if (response["error"] == 1) {
-                if (response["type"] == "oldPass") {
-                    oldPassMsg.textContent = response["message"];
+            },{headers:{'Content-Type': 'application/json'}}).then(function (response) {
+                if (response.data.error == 1) {
+                if (response.data.type == "oldPass") {
+                    oldPassMsg.textContent = response.data.message;
                 }
                 } else {
-                showAlert(response["message"]);
+                showAlert(response.data.message);
                 }
             });
             }
         },
         deleteAcc() {
-            $.ajax({
-                type: 'POST',
-                url: '/dashboard',
-                data: JSON.stringify({
-                    "requestType": "deleteAccount",
-                }),
-
-                contentType: "application/json",
-                dataType: "json"
-                }).done(function (response) {
-                window.location.replace('/logout?type=deleteAccount');
-
-                });
+            axios.post("/dashboard",
+            {
+                "requestType": "deleteAccount",
+            },{headers:{'Content-Type': 'application/json'}}).then(function (response) {
+                window.location.replace('/logout');
+            });
         },
     }
 });
@@ -308,15 +296,48 @@ function clearMsgs() {
       element.textContent = "";
     })
 }
-</script>
 
-<script type="text/javascript">
+function change_user_font_size(username, element){
+    length = username.length
+    console.log(length)
+    size = '2vw';
+
+    if (length > 6) {
+        if (length > 8){ 
+            if (length > 12){
+                if (length > 16){
+                    size='1vw';                    
+                }
+                else {
+                size='1.2vw';
+                }
+            }
+            else {
+            size='1.6vw';
+            }
+        }
+        else {
+        size='2vw';
+        }
+    }
+    else {
+    size='3vw';
+    }
+
+    console.log(size)
+
+    element.style['font-size'] = size;
+}
+
+user = JSON.parse('{{user|tojson}}');
+usernameText = document.getElementById('user_name');
+usernameText.addEventListener("load", change_user_font_size(user['username'], usernameText));
+
 completedTasksStatP = document.getElementById('completedTasksStat');
 lateTasksStatP = document.getElementById('lateTasksStat');
 onTimeTasksStatP = document.getElementById('onTimeTasksStat');
 coinsStatP= document.getElementById('coinsStat');
 
-console.log(haveStats);
 allTimeStats = JSON.parse('{{allTimeStats|tojson}}');
 console.log(allTimeStats);
 thisYearStats = JSON.parse('{{thisYearStats|tojson}}');

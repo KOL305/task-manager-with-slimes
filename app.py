@@ -158,9 +158,10 @@ def completetask(uid):
 @app.route('/dashboard', methods=['GET','POST'])
 @login_required
 def dashboard(uid):
+    users = db.users
+    user = users.find_one({'_id': ObjectId(session['logged_in_id'])})
     if request.method == 'GET':
-        users = db.users
-        user = users.find_one({'_id': ObjectId(session['logged_in_id'])})
+        user['_id'] = str(user['_id'])
         tasks = list(db.tasks.find({'u_id': session['logged_in_id'], 'complete': True}).sort([('completeDate', pymongo.ASCENDING)]))
         print(tasks)
         today = datetime.date.today().strftime("%Y-%m-%d-%H-%M").split("-")
@@ -290,7 +291,31 @@ def dashboard(uid):
         lastMonthStats = {'dataset': lastMonthFrame, 'cDataset': cLastMonthFrame, 'completedTasks': lmCompletedTasks, 'lateTasks': lmLateTasks, 'onTimeTasks': lmOnTimeTasks, 'coins': lmCoinsEarned}
 
         return render_template('dashboard.html', user=user, bal=user['balance'], allTimeStats=allTimeStats, thisYearStats=thisYearStats, lastYearStats=lastYearStats, thisMonthStats=thisMonthStats, lastMonthStats=lastMonthStats)
+    elif request.method == "POST":
+        requestType = request.get_json()['requestType']
+        if requestType == "changePassword":
+            oldPassword = request.get_json()['oldPass']
+            newPassword = request.get_json()['newPass']
+            if pbkdf2_sha256.verify(oldPassword, user['password_hash']):
+                users.update_one({'_id': ObjectId(session['logged_in_id'])}, {
+                    '$set': {'password_hash': pbkdf2_sha256.hash(newPassword)}})
+                return jsonify({"error": "0", "message": "Password Successfully Changed"})
+            else:
+                return jsonify({"error": "1", "message": "Current Password Does Not Match With Database", "type": "oldPass"})
 
+        elif requestType == "changeUsername":
+            username = request.get_json()['username']
+            if users.find_one({"username": username}) is not None:
+                return jsonify({"error": "1", "message": "Username Already Exists"})
+            else:
+                users.update_one({'_id': ObjectId(session['logged_in_id'])}, {
+                    '$set': {'username': username}})
+                return jsonify({"error": "0", "message": "Username Successfully Changed"})
+
+        elif requestType == "deleteAccount":
+            users.delete_one(user)
+            flash("Account Successfully Deleted", category="success")
+            return jsonify({"error": "0", "message": "Account Successfully Deleted"})
 
 @app.route('/login', methods=['POST'])
 def login():
