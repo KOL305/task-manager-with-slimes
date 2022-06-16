@@ -54,6 +54,14 @@ def home():
     elif request.method == 'POST':
         return render_template('home.html')
 
+@app.route('/shop', methods=['GET', 'POST'])
+@login_required
+def shop(uid):
+    if request.method == 'GET':
+        return render_template('shop.html')
+    elif request.method == 'POST':
+        pass
+
 @app.route('/tasks', methods=['GET','POST'])
 @login_required
 def tasks(uid):
@@ -359,6 +367,16 @@ def signup():
                 user = users.find_one({'username': username})
                 session['logged_in'] = True
                 session['logged_in_id'] = str(user['_id'])
+
+                newShopUser = {
+                    "u_id": session['logged_in_id'],
+                    "slimeColor": "Unselected",
+                    "slimeTop": "Unselected",
+                    "slimeColorOwned": [],
+                    "slimeTopOwned": []
+                }
+                db.shop.insert_one(newShopUser)
+
                 flash('Account Successfully Created', category='success')
                 return jsonify({'redirect': '/dashboard'})
             else:
