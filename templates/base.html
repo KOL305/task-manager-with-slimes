@@ -86,7 +86,7 @@
                     </div>
                 </div>
             </div>
-            <nav style="--bs-breadcrumb-divider: ''; height: 75px;"class="navbar nav_container">
+            <nav style="--bs-breadcrumb-divider: ''; min-height: 75px;"class="navbar nav_container">
                 <div class="container-fluid">
                     <a href="/" class="logo extrabold">Task Manager With Slimes</a>
                     {% if session['logged_in'] %}
@@ -106,6 +106,7 @@
                         {% endif %}
                         {% endblock %}
                     </div>
+                    
                 </div>
             </nav>
             {% block content %}{% endblock %}
@@ -137,7 +138,8 @@
                     page.style['background-attachment'] = true;
                 }
                 else if (url.pathname == '/dashboard'){
-                    page.style['background'] = "linear-gradient(315deg, #772f1a 0%, #f2a65a 74%)";
+                    // page.style['background'] = "linear-gradient(315deg, #D93965 100%, #E3E3E3 100%)";
+                    page.style['background'] = "linear-gradient(315deg, #f9c1b1 0%, #fb8085 74%)";
                     page.style['background-attachment'] = true;
                 }
             </script>
