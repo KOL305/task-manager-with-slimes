@@ -58,9 +58,55 @@ def home():
 @login_required
 def shop(uid):
     if request.method == 'GET':
-        return render_template('shop.html')
+        user = db.users.find_one({'_id': ObjectId(session['logged_in_id'])})
+        user['_id'] = str(user['_id'])
+        return render_template('shop.html', user=user, bal=user['balance'])
     elif request.method == 'POST':
-        pass
+        user = list(db.users.find_one({'_id': ObjectId(session['logged_in_id'])}))
+        requestType = request.get_json()['requestType']
+
+        if requestType == 'changeColor':
+            color = request.get_json()['color']
+            data = user['data']
+            if data['slimeColorOwned'][color]: #If color already owned
+                data['slimeColor'] = color
+                db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
+                    '$set': {'data': data}
+                })
+            else: #If not owned
+                if user['balance'] >= 100: #If there is enough money in balance
+                    data['slimeColor'] = color
+                    data['slimeColorOwned'][color] = True
+                    db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
+                        '$set': {'data': data}
+                    })
+                    db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
+                        '$set': {'balance': user['balance']-100}
+                    })
+                    return jsonify({"error": 0, 'message': 'Color Bought'}) #Error 0 = none
+                return jsonify({'error': 2, 'message': 'Not Enough Coins'}) #Error 2 = not enough money in account
+
+        elif requestType == 'changeTop':
+            top = request.get_json()['top']
+            data = user['data']
+            if data['slimeTopOwned'][top]: #If top already owned
+                data['slimeTop'] = top
+                db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
+                    '$set': {'data': data}
+                })
+            else: #If not owned
+                if user['balance'] >= 150:
+                    data['slimeTop'] = top
+                    data['slimeTopOwned'][top] = True
+                    db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
+                    '$set': {'data': data}
+                    })
+                    db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
+                    '$set': {'balance': user['balance']-150}
+                    })
+                    return jsonify({'error': 0, 'message': 'Top Bought'}) #Error 0 = none
+                return jsonify({'error': 2, 'message': 'Not Enough Coins'}) #Error 2 = not enough money in account
+        return jsonify({'error': 1, 'message': 'An Error Has Occurred. Please Try Again'}) #Error 1 = something went wrong
 
 @app.route('/tasks', methods=['GET','POST'])
 @login_required
@@ -356,26 +402,35 @@ def signup():
         password=request.get_json()['password']
         cpassword=request.get_json()['confirm_password']
         users = db.users
-        newUser = {
-            "username": username,
-            "password_hash": pbkdf2_sha256.hash(password),
-            "balance": 0,
-        }
-        if users.find_one({'username': newUser['username']}) is None:
+
+        if users.find_one({'username': username}) is None:
+            
             if password == cpassword:
+                data = {
+                    "slimeColor": "Unselected",
+                    "slimeTop": "Unselected",
+                    "slimeColorOwned": {
+                        "blue": False,
+                        "green": False,
+                        "orange": False,
+                        "purple": False, 
+                        "red": False,
+                        "yellow": False,
+                    },
+                    "slimeTopOwned": {
+                        "hat": False,
+                    }
+                }
+                newUser = {
+                    "username": username,
+                    "password_hash": pbkdf2_sha256.hash(password),
+                    "balance": 100,
+                    "data": data,
+                }
                 users.insert_one(newUser)
                 user = users.find_one({'username': username})
                 session['logged_in'] = True
                 session['logged_in_id'] = str(user['_id'])
-
-                newShopUser = {
-                    "u_id": session['logged_in_id'],
-                    "slimeColor": "Unselected",
-                    "slimeTop": "Unselected",
-                    "slimeColorOwned": [],
-                    "slimeTopOwned": []
-                }
-                db.shop.insert_one(newShopUser)
 
                 flash('Account Successfully Created', category='success')
                 return jsonify({'redirect': '/dashboard'})
