@@ -32,10 +32,10 @@
                                 <div class="container">
                                     <img src="{{ url_for('static', filename='images/objects/person-fill.svg') }}">
                                     <input type="text" placeholder="Enter Username" name="username-input" class="form_box" v-model="l_username" required><br>
-                                    <p id="lUserMsg" style="color:red !important;"></p><br>
+                                    <p id="lUserMsg" style="color:red !important;" v-if="lUserError">username not found</p><br>
                                     <img src="{{ url_for('static', filename='images/objects/key-fill.svg') }}">
                                     <input type="password" placeholder="Enter Password" name="password-input" class="form_box" v-model="l_password" required><br>
-                                    <p id="lPassMsg" style="color:red !important;"></p><br>
+                                    <p id="lPassMsg" style="color:red !important;" v-if="lPassError">incorrect password</p><br>
                                 </div>
                         </div>
                         <div class="modal-footer">
@@ -142,6 +142,13 @@
                     page.style['background'] = "linear-gradient(315deg, #f9c1b1 0%, #fb8085 74%)";
                     page.style['background-attachment'] = true;
                 }
+                else if (url.pathname == '/shop'){
+                    page.style['background-image'] = "url('../static/images/background.png')";
+                    page.style['background-size'] = "cover";
+                    page.style['background-position'] = "center";
+                    page.style['background-size'] = "37rem 100%";
+                    page.style['background-repeat'] = "repeat-x";
+                }
             </script>
 
             <script type="text/javascript">
@@ -159,28 +166,29 @@
                     },
                     methods: {
                     submit(l_username, l_password) {
+                        refThis = this
                         axios.post("/login",
                         {
                             username: this.l_username,
                             password: this.l_password,
                         },
                         {headers:{'Content-Type': 'application/json'}}).then(function (response) {
-                        this.lUserError = false;
-                        this.lPassError = false;
+                        refThis.lUserError = false;
+                        refThis.lPassError = false;
                         if (response.data.redirect) {
                             window.location.href = response.data.redirect;
                         }
                         else {
                             // let uMsg = document.getElementById['l-username-input-msg'];
                             // let pMsg = document.getElementById['l-password-input-msg'];
-                            if (response.data.error = 1) {
-                                this.lUserError = true;
+                            if (response.data.error == 1) {
+                                refThis.lUserError = true;
                                 // uMsg.textContent = response.message;
                                 // pMsg.textContent = '';
 
                             }
                             else if (response.data.error == 2) {
-                                this.lPassError = true;
+                                refThis.lPassError = true;
                                 // uMsg.textContent = '';
                                 // pMsg.textContent = response.message;
                             }
@@ -205,6 +213,7 @@
                     methods: {
                     submit(s_username, s_password, s_cpassword) {
                         console.log('data', s_username, s_password, s_cpassword);
+                        refThis = this
                         axios.post("/signup",
                         {
                             username: this.s_username,
@@ -212,8 +221,8 @@
                             confirm_password: this.s_cpassword,
                         },
                         {headers:{'Content-Type': 'application/json'}}).then(function (response) {
-                        this.sUserError = false;
-                        this.sPassError = false;
+                        refThis.sUserError = false;
+                        refThis.sPassError = false;
                         if (response.data.redirect) {
                             window.location.href = response.data.redirect;
                         }
@@ -226,13 +235,13 @@
                             // pMsg.textContent = '';
                             // cpMsg.textContent = '';
                             // console.log("c")
-                            if (response.data.error = 1) {
-                                this.sUserError = true;
+                            if (response.data.error == 1) {
+                                refThis.sUserError = true;
                                 
                                 // uMsg.textContent = response.message;
                             }
-                            else if (reponse.data.error == 2) {
-                                this.sPassError = true;
+                            else if (response.data.error == 2) {
+                                refThis.sPassError = true;
                                 // pMsg.textContent = response.message;
                                 // cpMsg.textContent = response.message;
                             }

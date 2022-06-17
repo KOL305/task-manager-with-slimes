@@ -66,13 +66,17 @@ def shop(uid):
         requestType = request.get_json()['requestType']
 
         if requestType == 'changeColor':
-            color = request.get_json()['color']
+            color = request.get_json()['attribute']
             data = user['data']
             if data['slimeColorOwned'][color]: #If color already owned
-                data['slimeColor'] = color
-                db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
-                    '$set': {'data': data}
-                })
+                if data['slimeColor'] == color:
+                    return jsonify({"error": 3, 'message': 'Color Already Selected'}) #Error 0 = none
+                else:
+                    data['slimeColor'] = color
+                    db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
+                        '$set': {'data': data}
+                    })
+                    return jsonify({"error": 0, 'message': 'Color Changed'}) #Error 0 = none
             else: #If not owned
                 if user['balance'] >= 100: #If there is enough money in balance
                     data['slimeColor'] = color
@@ -87,13 +91,20 @@ def shop(uid):
                 return jsonify({'error': 2, 'message': 'Not Enough Coins'}) #Error 2 = not enough money in account
 
         elif requestType == 'changeTop':
-            top = request.get_json()['top']
+            top = request.get_json()['attribute']
             data = user['data']
             if data['slimeTopOwned'][top]: #If top already owned
-                data['slimeTop'] = top
-                db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
-                    '$set': {'data': data}
-                })
+                if data['slimeTop'] == top:
+                    data['slimeTop'] = 'plain'
+                    db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
+                        '$set': {'data': data}
+                    })
+                else:
+                    data['slimeTop'] = top
+                    db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
+                        '$set': {'data': data}
+                    })
+                return jsonify({"error": 0, 'message': 'Top Changed'}) #Error 0 = none
             else: #If not owned
                 if user['balance'] >= 150:
                     data['slimeTop'] = top

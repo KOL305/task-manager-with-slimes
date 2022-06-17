@@ -1,116 +1,58 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends 'base.html' %} {% block title %}Shop{% endblock %}
+{% block style %}
 <style>
-body, html {
+.screen {
   width: 100%;
   height: 100%;
   margin: 0;
 }
 
-.container {
-  width: 100%;
-  height: 100%;
-}
-
-.leftpane {
-    width: 33%;
-    height: 100%;
-    float: left;
-    border-collapse: collapse;
-    display: grid;
-    grid-template-rows: 15% auto auto;
-}
-
-.rightpane {
-  width: 67%;
-  height: 100%;
-  position: relative;
-  float: right;
-  border-collapse: collapse;
-  background-image: url('../static/images/background.png');
-  background-size: cover;
-  background-position: center;
-  background-size: 37rem 100%;
-  background-repeat: repeat-x;
-}
-
-h1{
-    text-align: center;
-    background-color: rgba(236, 127, 47, 1);
-    margin:0;
-    padding: 1.5rem;
-    position: relative;
-}
-
-.colors{
-    position: relative;
-    text-align: center;
-    background-color: rgba(242, 166, 90, 1);
-    padding: 11px 0 0 0;
-    margin:0;
-}
-
-.colorsGrid{
-    display:grid;
-    grid-template-columns: auto auto auto;
-    background-color: rgba(242, 166, 90, 1);
-}
-
-.accessoriesGrid{
-    display: grid;
-    grid-template-columns: auto auto auto;
-    grid-template-rows: auto auto;
-    background-color: rgba(242, 203, 126, 1);
-}
-
-.accessories{
-    text-align: center;
-    background-color: rgba(242, 203, 126, 1);
-    padding: 11px 0 0 0;
-    margin:0;
-}
-
-.colorsGrid img {
-  width: 75%;
-  height: auto;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.accessoriesGrid img{
-  width: 30%;
-  height: auto;
-  display: block;
-  margin-left: 2%;
-  margin-right: auto;
-  grid-column: 1/1;
-  grid-row: 1/1;
-}
-
-.rightpane img{
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 30rem;
-    height: auto;
-}
-
- .center {
+.center {
   margin: 0;
   position: absolute;
   top: 50%;
-  left: 47%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+  left: 50%;
+  -ms-transform: translate(-50%, -30%);
+  transform: translate(-50%, -30%);
 }
-
 </style>
-</head>
-<body>
+{% endblock %}
+{% block content %}
+<div class="screen">
     <div class="container">
-        <div class="leftpane">
+        <div class="dropright">
+            <button class="shopbtn">|||</button>
+            <div class="dropright-content text-center">
+                <h1 class="title bold">Shop</h1>
+                <div class="optionContainer">
+                    <br><h2 class="semibold">Colors</h2>
+                    <div class="optionList">
+                        <div id="shopColors" class="colorsGrid">
+                            <div style="width:160px; height:auto; display:block;"><img class="m-auto" style="width:160px; height:auto; padding-top:0;" src="../static/images/red slime.png"><p></p></div>
+                            <img src="../static/images/red slime.png">
+                            <img src="../static/images/orange slime.png">
+                            <img src="../static/images/yellow slime.png">
+                            <img src="../static/images/green slime.png">
+                            <img src="../static/images/blue slime.png">
+                            <img src="../static/images/purple slime.png">
+                            <!-- <div style="width:160px; height:auto; display:block;"><img class="m-auto" style="width:35%; height:auto; padding-top:30px;" src="../static/images/objects/slime_coin.png"><p>100</p></div> -->
+                        </div>
+                    </div>
+                </div>
+                <br><br>
+                <div class="optionContainer">
+                    <br><h2 class="semibold">Accessories</h2>
+                    <div class="optionList">
+                        <div id="shopTop" class="accessoriesGrid">
+                            <div><img src="../static/images/hat.png" alt="Link Click cover"/></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+        <!-- <div class="leftpane">
             <h1>Shop</h1>
             <h2 class="colors">Colors</h2>
             <div class="colorsGrid">
@@ -125,14 +67,98 @@ h1{
             <div class="accessoriesGrid">
                 <div><img src="../static/images/hat.png" alt="Link Click cover"/></div>
             </div>
-        </div>
+        </div> -->
 
-        <div class="rightpane">
-            <div class="center">
-                <img src="../static/images/yellow slime.gif">
+        <!-- <div class="rightpane"> -->
+            <div>
+                <img style="width:35%;" class="center" src="../static/images/yellow slime.gif" >
             </div>
-        </div>
+        <!-- </div> -->
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+    var user=JSON.parse('{{user|tojson}}');
+    var data=user['data'];
+    var colors=data['slimeColorOwned'];
+    var tops=data['slimeTopOwned'];
+    
+    var shopColorsDiv = document.getElementById('shopColors');
+    var shopTopsDiv = document.getElementById('shopTop');
 
+    generateItems(colors, shopColorsDiv, 100);
+    generateItems(tops, shopTopsDiv, 150);
+
+    console.log(colors)
+
+
+    function generateItems(items, container, cost){
+        Object.entries(items).forEach(function (attribute) { //Goes through each attribute: Ex: slime color --> (color = ['color', 't/f'])
+            var imgDiv = document.createElement("div");
+            var imgDivId='div-'+attribute[0];
+            imgDiv.setAttribute('id', imgDivId);
+            imgDiv.style['width'] = '160px';
+            imgDiv.style['height'] = 'auto';
+            imgDiv.style['display'] = 'block';
+
+            var img = document.createElement("img");
+            var imgId = 'img-'+attribute[0];
+            img.setAttribute('id', imgId);
+            img.classList.add('m-auto')
+            img.style['width'] = '160px';
+            img.style['height'] = 'auto';
+            img.style['padding-top'] = 0;
+            img.src = "{{ url_for('static', filename='images/slimes/{{attribute[0]}}/{{attribute[0]}}_slime_plain.png') }}";
+
+            var imgP = document.createElement("p");
+            var imgPId = 'p-'+attribute[0]
+            img.setAttribute('id', imgPId);
+
+            if (!(attribute[1])) { //If user owns attribute
+                imgDiv.onmouseover = hover(imgDivId, imgId, imgPId, cost)
+                imgDiv.onmouseout = unhover(imgDivId, imgId, imgPId)
+            }
+            imgDiv.onclick = changeAttribute(attribute[0]);
+
+            imgDiv.append(img);
+            imgDiv.append(imgP);
+            container.append(imgDiv);
+        })
+    }
+
+    function changeAttribute(attribute){
+        //axios post request here
+    }
+
+    function hover(divId, imgId, pId, cost){
+        var div = document.getElementById(divId);
+        
+        var img = document.getElementById(imgId);
+        console.log(img);
+        var p = document.getElementById(pId);
+
+        img.src = "{{ url_for('static', filename='images/objects/slime_coin.png') }}";
+        img.style['width'] = '35%';
+        img.style['padding-top'] = '30px';
+
+        p.innerHTML = cost;
+    }
+
+    function unhover(divId, imgId, pId){
+        div = document.getElementById("divId");
+        img = document.getElementById("imgId");
+        p = document.getElementById("pId");
+
+        img.style['width'] = '160px';
+        img.style['height'] = 'auto';
+        img.style['padding-top'] = 0;
+        img.src = "{{ url_for('static', filename='images/slimes/{{attribute[0]}}/{{attribute[0]}}_slime_plain.png') }}";
+
+        p.innerHTML = "";
+    }
+
+    
+
+</script>
+{% endblock %}

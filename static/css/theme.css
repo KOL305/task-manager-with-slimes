@@ -81,7 +81,7 @@
     outline: none;
 }
 
-/* Hoverable Dropdown */
+/* Hoverable DropUp */
 .dropbtn {
     background-color: #3498DB;
     color: white;
@@ -113,6 +113,92 @@
 
 .dropup:hover .dropbtn {
     background-color: #2980B9;
+}
+
+/* Shop Page - Hoverable Shop Menu */
+.shopbtn {
+    float: right;
+    background-color: #3498DB;
+    color: white;
+    height: 150px;
+    width: 30px;
+    margin-top:25%;
+    border-radius:1px;
+    font-size: 16px;
+    border: none;
+}
+
+.dropright {
+    position: fixed;
+    height: 90%;
+    left: -540px;
+    transition: left ease 1s;
+    z-index: 2;
+}
+
+.dropright-content {
+    float:right;
+    border: 7px solid darkgray;
+    border-radius: 5px;
+    background-color: lightgray;
+    z-index: 1;
+    width:540px;
+    height:100%;
+}
+
+.dropright:hover {
+    left: 0;
+    transition: left ease 1s;
+}
+
+.dropright:hover .shopbtn {
+    background-color: #2980B9;
+}
+
+.title{
+    text-align: center;
+    margin:0;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.optionContainer{
+    border-top: 7px solid darkgray;
+    border-bottom: 7px solid darkgray;
+}
+
+.optionList{
+    overflow: auto;
+    overflow-x: hidden;
+    height: 10vw;
+}
+
+.colorsGrid{
+    display:grid;
+    grid-template-columns: auto auto auto;
+}
+
+.colorsGrid img {
+  width: 160px;
+  height: auto;
+  display: block;
+}
+
+.accessoriesGrid{
+    height:fit-content;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: auto auto;
+}
+
+.accessoriesGrid img{
+  width: 30%;
+  height: auto;
+  display: block;
+  margin-left: 2%;
+  margin-right: auto;
+  grid-column: 1/1;
+  grid-row: 1/1;
 }
 
 /* Other */
