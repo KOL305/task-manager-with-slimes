@@ -23,11 +23,12 @@
 }
 
 .coin {
-    margin-top: 4px;
+    margin-top: 1px;
     margin-left: 0;
     padding-left: 0;
     margin-right: -1px;
     padding-right: 0;
+    width: 20px;
 }
 </style>
 {% endblock %}
@@ -37,7 +38,7 @@
 <div class="container" id="page">
     <div class="text-center">
         <form action="/tasks" method="POST" id="createTaskForm">
-            <h1 style="color:white;" class="bold">My Tasks</h1>
+            <h1 style="color:white;" class="bold">Task Board</h1>
             <div class="row">
                 <div class="col-6">
                     <label style="color:white;" for="Title">Title of Task:</label>
@@ -51,9 +52,11 @@
                 </div>
             </div>
             <div>
-                <label style="color:white;" for="difficultyBar">Difficulty</label><br>
-                <input type="range" max="4" min="0" id="difficultyBar" style="width:100%;" v-model="difficulty" required/>
+                <label style="color:white; float:left; padding-left:0px; padding-right:5px;" for="difficultyBar">Difficulty:</label>
+                <p style="padding-left:5px; padding-right:0px;float:left; color:green;" id="difficultyText">Very Easy</p><br>
+                <input type="range" max="4" min="0" id="difficultyBar" style="width:100%;" v-model="difficulty" @change="difficultyChange(difficulty)"required/>
                 <br>
+                <div>
             </div>
             <div>
                 <label style="color:white;" for="notes">Notes</label>
@@ -89,6 +92,30 @@
             };
         },
         methods: {
+        difficultyChange(difficulty){
+            var difficultyText = document.getElementById("difficultyText");
+            if (this.difficulty == 0){
+                difficultyText.innerHTML="Very Easy";
+                difficultyText.style['color']="green";
+            }
+            else if (this.difficulty == 1){
+                difficultyText.innerHTML="Easy";
+                difficultyText.style['color']="yellowgreen";
+            }
+            else if (this.difficulty == 2){
+                difficultyText.innerHTML="Medium";
+                difficultyText.style['color']="yellow";
+            }
+            else if (this.difficulty == 3){
+                difficultyText.innerHTML="Hard";
+                difficultyText.style['color']="red";
+            }
+            else if (this.difficulty == 4){
+                difficultyText.innerHTML="Very Hard";
+                difficultyText.style['color']="darkred";
+            }
+        },
+
         submit(title, duetime, difficulty, notes) {
             axios.post("/addtask",
             {
@@ -215,10 +242,10 @@
             taskDifficultyColor.style["background-color"] = 'yellow';
         }
         else if (task["difficulty"] == 3) {
-            taskDifficultyColor.style["background-color"] = 'orange';
+            taskDifficultyColor.style["background-color"] = 'red';
         }
         else if (task["difficulty"] == 4) {
-            taskDifficultyColor.style["background-color"] = 'red';
+            taskDifficultyColor.style["background-color"] = 'darkred';
         }
 
         taskDifficultyDiv.append(taskDifficulty); //Append difficulty text to col
@@ -241,7 +268,7 @@
         var taskRewardIcon = document.createElement('img'); //Creates icon for reward p
         taskRewardIcon.classList.add("coin");
         taskRewardIcon.style['float'] = 'right';
-        taskRewardIcon.setAttribute('src', "{{ url_for('static', filename='images/objects/coin.svg') }}");
+        taskRewardIcon.setAttribute('src', "{{ url_for('static', filename='images/objects/slime_coin.png') }}");
 
         taskDetailsColThree.append(taskReward); //Append reward text to col
         taskDetailsColThree.append(taskRewardIcon); //Append reward icon to col

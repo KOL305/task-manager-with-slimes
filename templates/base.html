@@ -227,23 +227,11 @@
                             window.location.href = response.data.redirect;
                         }
                         else {
-                            // console.log("a");
-                            // console.log(uMsg);
-                            // console.log("b");
-                            // uMsg.innerHTML = '';
-                            // console.log("ab");
-                            // pMsg.textContent = '';
-                            // cpMsg.textContent = '';
-                            // console.log("c")
                             if (response.data.error == 1) {
                                 refThis.sUserError = true;
-                                
-                                // uMsg.textContent = response.message;
                             }
                             else if (response.data.error == 2) {
                                 refThis.sPassError = true;
-                                // pMsg.textContent = response.message;
-                                // cpMsg.textContent = response.message;
                             }
                         }
                         });

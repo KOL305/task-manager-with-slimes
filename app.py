@@ -60,25 +60,35 @@ def shop(uid):
     if request.method == 'GET':
         user = db.users.find_one({'_id': ObjectId(session['logged_in_id'])})
         user['_id'] = str(user['_id'])
-        return render_template('shop.html', user=user, bal=user['balance'])
+        decor = [user['data']['slimeColor'], user['data']['slimeTop']]
+        return render_template('shop.html', user=user, bal=user['balance'], decor=decor)
     elif request.method == 'POST':
-        user = list(db.users.find_one({'_id': ObjectId(session['logged_in_id'])}))
+        user = db.users.find_one({'_id': ObjectId(session['logged_in_id'])})
+        print("user",user)
         requestType = request.get_json()['requestType']
 
-        if requestType == 'changeColor':
+        if requestType == 'change-color':
             color = request.get_json()['attribute']
+            print("h")
             data = user['data']
+            print("hello")
             if data['slimeColorOwned'][color]: #If color already owned
+                print("color owned")
                 if data['slimeColor'] == color:
-                    return jsonify({"error": 3, 'message': 'Color Already Selected'}) #Error 0 = none
+                    print("already selected")
+                    return jsonify({"error": 3, 'message': 'Color Already Selected'}) #Error 3 = already selected
                 else:
+                    print("selected")
                     data['slimeColor'] = color
                     db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
                         '$set': {'data': data}
                     })
-                    return jsonify({"error": 0, 'message': 'Color Changed'}) #Error 0 = none
+                    return jsonify({"error": 0, 'message': 'Color Changed', "action": 'toggle',
+                    "attributes": [color, user['data']['slimeTop']]}) #Error 0 = none
             else: #If not owned
+                print("not owned")
                 if user['balance'] >= 100: #If there is enough money in balance
+                    print("bought")
                     data['slimeColor'] = color
                     data['slimeColorOwned'][color] = True
                     db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
@@ -87,10 +97,11 @@ def shop(uid):
                     db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
                         '$set': {'balance': user['balance']-100}
                     })
-                    return jsonify({"error": 0, 'message': 'Color Bought'}) #Error 0 = none
+                    return jsonify({"error": 0, 'message': 'Color Bought', "action": 'bought',
+                    "attributes": [color, user['data']['slimeTop']]}) #Error 0 = none
                 return jsonify({'error': 2, 'message': 'Not Enough Coins'}) #Error 2 = not enough money in account
 
-        elif requestType == 'changeTop':
+        elif requestType == 'change-top':
             top = request.get_json()['attribute']
             data = user['data']
             if data['slimeTopOwned'][top]: #If top already owned
@@ -99,12 +110,15 @@ def shop(uid):
                     db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
                         '$set': {'data': data}
                     })
+                    return jsonify({"error": 0, 'message': 'Top Changed', "action": 'toggle',
+                    "attributes": [user['data']['slimeColor'], 'plain']}) #Error 0 = none
                 else:
                     data['slimeTop'] = top
                     db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
                         '$set': {'data': data}
                     })
-                return jsonify({"error": 0, 'message': 'Top Changed'}) #Error 0 = none
+                    return jsonify({"error": 0, 'message': 'Top Changed', "action": 'toggle',
+                    "attributes": [user['data']['slimeColor'], top]}) #Error 0 = none
             else: #If not owned
                 if user['balance'] >= 150:
                     data['slimeTop'] = top
@@ -115,7 +129,8 @@ def shop(uid):
                     db.users.update_one({'_id': ObjectId(session['logged_in_id'])},{
                     '$set': {'balance': user['balance']-150}
                     })
-                    return jsonify({'error': 0, 'message': 'Top Bought'}) #Error 0 = none
+                    return jsonify({'error': 0, 'message': 'Top Bought', "action": 'bought',
+                    "attributes": [user['data']['slimeColor'], top]}) #Error 0 = none
                 return jsonify({'error': 2, 'message': 'Not Enough Coins'}) #Error 2 = not enough money in account
         return jsonify({'error': 1, 'message': 'An Error Has Occurred. Please Try Again'}) #Error 1 = something went wrong
 
@@ -227,6 +242,7 @@ def dashboard(uid):
     user = users.find_one({'_id': ObjectId(session['logged_in_id'])})
     if request.method == 'GET':
         user['_id'] = str(user['_id'])
+        attributes = [user['data']['slimeColor'], user['data']['slimeTop']]
         tasks = list(db.tasks.find({'u_id': session['logged_in_id'], 'complete': True}).sort([('completeDate', pymongo.ASCENDING)]))
         print(tasks)
         today = datetime.date.today().strftime("%Y-%m-%d-%H-%M").split("-")
@@ -355,7 +371,7 @@ def dashboard(uid):
         thisMonthStats = {'dataset': thisMonthFrame, 'cDataset': cThisMonthFrame, 'completedTasks': mCompletedTasks, 'lateTasks': mLateTasks, 'onTimeTasks': mOnTimeTasks, 'coins': mCoinsEarned}
         lastMonthStats = {'dataset': lastMonthFrame, 'cDataset': cLastMonthFrame, 'completedTasks': lmCompletedTasks, 'lateTasks': lmLateTasks, 'onTimeTasks': lmOnTimeTasks, 'coins': lmCoinsEarned}
 
-        return render_template('dashboard.html', user=user, bal=user['balance'], allTimeStats=allTimeStats, thisYearStats=thisYearStats, lastYearStats=lastYearStats, thisMonthStats=thisMonthStats, lastMonthStats=lastMonthStats)
+        return render_template('dashboard.html', user=user, bal=user['balance'], attributes=attributes, allTimeStats=allTimeStats, thisYearStats=thisYearStats, lastYearStats=lastYearStats, thisMonthStats=thisMonthStats, lastMonthStats=lastMonthStats)
     elif request.method == "POST":
         requestType = request.get_json()['requestType']
         if requestType == "changePassword":
@@ -395,7 +411,7 @@ def login():
             session['logged_in'] = True
             session['logged_in_id'] = str(user['_id'])
             flash('Successful Login', category='success')
-            return jsonify({'redirect': '/dashboard'})
+            return jsonify({'redirect': '/tasks'})
         else:
             if user is None:
                 return jsonify({"error": "1", "message": "invalid username"})
@@ -418,8 +434,8 @@ def signup():
             
             if password == cpassword:
                 data = {
-                    "slimeColor": "Unselected",
-                    "slimeTop": "Unselected",
+                    "slimeColor": "unselected",
+                    "slimeTop": "plain",
                     "slimeColorOwned": {
                         "blue": False,
                         "green": False,

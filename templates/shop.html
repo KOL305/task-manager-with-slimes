@@ -27,115 +27,146 @@
                 <div class="optionContainer">
                     <br><h2 class="semibold">Colors</h2>
                     <div class="optionList">
-                        <div id="shopColors" class="colorsGrid">
-                            <div style="width:160px; height:auto; display:block;"><img class="m-auto" style="width:160px; height:auto; padding-top:0;" src="../static/images/red slime.png"><p></p></div>
-                            <img src="../static/images/red slime.png">
-                            <img src="../static/images/orange slime.png">
-                            <img src="../static/images/yellow slime.png">
-                            <img src="../static/images/green slime.png">
-                            <img src="../static/images/blue slime.png">
-                            <img src="../static/images/purple slime.png">
-                            <!-- <div style="width:160px; height:auto; display:block;"><img class="m-auto" style="width:35%; height:auto; padding-top:30px;" src="../static/images/objects/slime_coin.png"><p>100</p></div> -->
-                        </div>
+                        <div id="shop-color" class="colorsGrid"></div>
                     </div>
                 </div>
                 <br><br>
                 <div class="optionContainer">
                     <br><h2 class="semibold">Accessories</h2>
                     <div class="optionList">
-                        <div id="shopTop" class="accessoriesGrid">
-                            <div><img src="../static/images/hat.png" alt="Link Click cover"/></div>
-                        </div>
+                        <div id="shop-top" class="accessoriesGrid"></div>
                     </div>
                 </div>
-
-            </div>
-            
+            </div>       
         </div>
-        <!-- <div class="leftpane">
-            <h1>Shop</h1>
-            <h2 class="colors">Colors</h2>
-            <div class="colorsGrid">
-                <div><img src="../static/images/red slime.png"></div>
-                <div><img src="../static/images/orange slime.png"></div>
-                <div><img src="../static/images/yellow slime.png"></div>
-                <div><img src="../static/images/green slime.png"></div>
-                <div><img src="../static/images/blue slime.png"></div>
-                <div><img src="../static/images/purple slime.png"></div>
-            </div>
-            <h2 class="accessories">Accessories</h2>
-            <div class="accessoriesGrid">
-                <div><img src="../static/images/hat.png" alt="Link Click cover"/></div>
-            </div>
-        </div> -->
+        <div>
+            {% if decor[0] != 'unselected' %}
+            <img id="slime" style="width:35%;" class="center" src="../static/images/slimes/{{decor[0]}}/{{decor[0]}}_slime_{{decor[1]}}.gif">
+            {% else %}
+            <img id="slime" style="width:35%;" class="center">
+            {% endif %}
 
-        <!-- <div class="rightpane"> -->
-            <div>
-                <img style="width:35%;" class="center" src="../static/images/yellow slime.gif" >
-            </div>
-        <!-- </div> -->
+
+
+        </div>
     </div>
 </div>
 {% endblock %}
 {% block scripts %}
 <script type="text/javascript">
-    var user=JSON.parse('{{user|tojson}}');
-    var data=user['data'];
-    var colors=data['slimeColorOwned'];
-    var tops=data['slimeTopOwned'];
-    
-    var shopColorsDiv = document.getElementById('shopColors');
-    var shopTopsDiv = document.getElementById('shopTop');
+    window.addEventListener('load', function() {
+        var decor = JSON.parse('{{decor|tojson}}');
+        var slime = document.getElementById("slime");
+        slime.onclick=function() {tap(decor[0], decor[1])};
+        generateShop();
+    });
 
-    generateItems(colors, shopColorsDiv, 100);
-    generateItems(tops, shopTopsDiv, 150);
+    function generateShop(){
+        var user=JSON.parse('{{user|tojson}}');
+        var data=user['data'];
+        var colors=data['slimeColorOwned'];
+        var tops=data['slimeTopOwned'];
 
-    console.log(colors)
-
-
-    function generateItems(items, container, cost){
-        Object.entries(items).forEach(function (attribute) { //Goes through each attribute: Ex: slime color --> (color = ['color', 't/f'])
-            var imgDiv = document.createElement("div");
-            var imgDivId='div-'+attribute[0];
-            imgDiv.setAttribute('id', imgDivId);
-            imgDiv.style['width'] = '160px';
-            imgDiv.style['height'] = 'auto';
-            imgDiv.style['display'] = 'block';
-
-            var img = document.createElement("img");
-            var imgId = 'img-'+attribute[0];
-            img.setAttribute('id', imgId);
-            img.classList.add('m-auto')
-            img.style['width'] = '160px';
-            img.style['height'] = 'auto';
-            img.style['padding-top'] = 0;
-            img.src = "{{ url_for('static', filename='images/slimes/{{attribute[0]}}/{{attribute[0]}}_slime_plain.png') }}";
-
-            var imgP = document.createElement("p");
-            var imgPId = 'p-'+attribute[0]
-            img.setAttribute('id', imgPId);
-
-            if (!(attribute[1])) { //If user owns attribute
-                imgDiv.onmouseover = hover(imgDivId, imgId, imgPId, cost)
-                imgDiv.onmouseout = unhover(imgDivId, imgId, imgPId)
-            }
-            imgDiv.onclick = changeAttribute(attribute[0]);
-
-            imgDiv.append(img);
-            imgDiv.append(imgP);
-            container.append(imgDiv);
-        })
+        generateItems(colors, 'color', 100,);
+        generateItems(tops, 'top', 150);
     }
 
-    function changeAttribute(attribute){
-        //axios post request here
+    function generateItems(items, type, cost){
+        var containerId = 'shop-'+type;
+        var container = document.getElementById(containerId);
+
+        entries =  Object.entries(items)
+
+        for (var item=0; item<(entries.length); item++){
+            attribute=entries[item];
+            generateItem(attribute, type, cost);
+        }
     }
 
-    function hover(divId, imgId, pId, cost){
+    function generateItem(attribute, type, cost){
+        var containerId = 'shop-'+type;
+        var container = document.getElementById(containerId);
+
+        var imgDiv = document.createElement("div");
+        var imgDivId='div-'+attribute[0];
+        imgDiv.setAttribute('id', imgDivId);
+        imgDiv.style['width'] = '160px';
+        imgDiv.style['height'] = 'auto';
+        imgDiv.style['display'] = 'block';
+
+        var img = document.createElement("img");
+        var imgId = 'img-'+attribute[0];
+        img.setAttribute('id', imgId);
+        img.classList.add('m-auto')
+        img.style['width'] = '160px';
+        img.style['height'] = 'auto';
+        img.style['padding-top'] = 0;
+        img.src = `../static/images/slimes/shop/${attribute[0]}.png`;
+
+        var imgP = document.createElement("p");
+        var imgPId = 'p-'+attribute[0];
+        imgP.setAttribute('id', imgPId);
+
+        imgDiv.append(img);
+        imgDiv.append(imgP);
+        container.append(imgDiv);
+
+        if (!(attribute[1])) { //If user doesn't own attribute
+            imgDiv.onmouseover = function() {hover(imgId, imgPId, cost)};
+            imgDiv.onmouseout = function() {unhover(imgId, imgPId, attribute[0])};
+        }
+
+        imgDiv.onclick = function() {changeAttribute(attribute[0], type, imgDivId)};
+    }
+
+    function changeAttribute(attribute, type, divId){
+        var slime = document.getElementById("slime");
         var div = document.getElementById(divId);
-        
+        console.log("click");
+        console.log(type);
+        axios.post("/shop",
+        {
+            requestType: 'change-'+type,
+            attribute: attribute,
+        },{headers:{'Content-Type': 'application/json'}}).then(function (response) {
+            console.log("apple");
+            if (response.data.error == 0) { //Changed
+                if (response.data.action == 'toggle') {
+                    console.log("attributes", response.data.attributes);
+                    console.log(`../static/images/slimes/${response.data.attributes[0]}/${response.data.attributes[0]}_slime_${response.data.attributes[1]}.gif`);
+                    slime.src = `../static/images/slimes/${response.data.attributes[0]}/${response.data.attributes[0]}_slime_${response.data.attributes[1]}.gif`;
+                    slime.onclick=function() {tap(response.data.attributes[0], response.data.attributes[1])};
+                }
+                if (response.data.action == 'bought') {
+                    slime.src = `../static/images/slimes/${response.data.attributes[0]}/${response.data.attributes[0]}_slime_${response.data.attributes[1]}.gif`;
+                    slime.onclick=function() {tap(response.data.attributes[0], response.data.attributes[1])};
+                    div.removeAttribute('onmouseover');
+                    div.removeAttribute('onmouseout');
+                    window.location.href = 'shop';
+                }
+            }
+            else if (response.data.error == 3) { //Already Selected
+            }
+            else if (response.data.error == 2) { //Not enough money
+                alert(response.data.message);
+            }
+            else if (response.data.error == 1) { //Random Error
+                alert(response.data.message);
+            }
+        });
+    }
+
+    function tap(color, top){
+        console.log("tapped");
+        var slime = document.getElementById("slime");
+        slime.src = `../static/images/slimes/${color}/${color}_slime_heart_${top}.png`;
+        setTimeout(() => {
+            slime.src = `../static/images/slimes/${color}/${color}_slime_${top}.gif`;
+        }, 1500);
+    }
+
+    function hover(imgId, pId, cost){
         var img = document.getElementById(imgId);
-        console.log(img);
         var p = document.getElementById(pId);
 
         img.src = "{{ url_for('static', filename='images/objects/slime_coin.png') }}";
@@ -145,20 +176,16 @@
         p.innerHTML = cost;
     }
 
-    function unhover(divId, imgId, pId){
-        div = document.getElementById("divId");
-        img = document.getElementById("imgId");
-        p = document.getElementById("pId");
+    function unhover(imgId, pId, attribute){
+        img = document.getElementById(imgId);
+        p = document.getElementById(pId);
 
         img.style['width'] = '160px';
         img.style['height'] = 'auto';
         img.style['padding-top'] = 0;
-        img.src = "{{ url_for('static', filename='images/slimes/{{attribute[0]}}/{{attribute[0]}}_slime_plain.png') }}";
+        img.src = `../static/images/slimes/shop/${attribute}.png`;
 
         p.innerHTML = "";
     }
-
-    
-
 </script>
 {% endblock %}

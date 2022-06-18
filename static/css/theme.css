@@ -192,13 +192,9 @@
 }
 
 .accessoriesGrid img{
-  width: 30%;
+  width: 160px;
   height: auto;
   display: block;
-  margin-left: 2%;
-  margin-right: auto;
-  grid-column: 1/1;
-  grid-row: 1/1;
 }
 
 /* Other */

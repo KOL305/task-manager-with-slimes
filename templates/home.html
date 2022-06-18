@@ -6,22 +6,22 @@
 <br>
 <div style="color:white;" class="text-center">
     <div class="row m-auto">
-        <div class="col">
-            <h2 class="semibold">Complete Tasks</h2>
-            <img src="linkClickHome.jpg" alt="Link Click cover"/>
+        <div class="col-4">
+            <h2 style="height: 100px;" class="semibold">Manage Tasks</h2><br><br>
+            <img src="../static/images/task_screenshot.png" style="width:15vw; height:auto;"/>
         </div>
-        <div class="col">
-            <h2 class="semibold">Earn Coins</h2>
-            <img src="cellsAtWorkHome.jpg" alt="Cells At Work cover"/>
+        <div class="col-4">
+            <h2 style="height: 100px;" class="semibold">Earn Coins</h2><br><br>
+            <img src="../static/images/objects/slime_coin.png" style="width:10vw; height:auto;"/>
             <br>
         </div>
-        <div class="col">
-            <h2 class="semibold">Customize Your Own Slime</h2>
-            <img src="pokemonHome.jpg" alt="Pokémon cover"/>
+        <div class="col-4">
+            <h2 style="height:100px;" class="semibold">Customize Your Own Slime</h2>
+            <img src="../static/images/slimes/orange/orange_slime_plain.png" style="width:20vw; height:auto;"/>
             <br>
         </div>
     </div>
-    <br><br><br><br>
+    <br>
     {% if not(session['logged_in']) %}
     <a class="btn btn-success p-3" data-bs-toggle="modal" data-bs-target="#signUpModal"><h3 class="bold">Sign Up Now!</h3></a>
     {% endif %}
