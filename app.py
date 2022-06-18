@@ -460,7 +460,7 @@ def signup():
                 session['logged_in_id'] = str(user['_id'])
 
                 flash('Account Successfully Created', category='success')
-                return jsonify({'redirect': '/dashboard'})
+                return jsonify({'redirect': '/tasks'})
             else:
                 return jsonify({"error": "2", "message": "passwords do not match"})
         else:
