@@ -1,3 +1,0 @@
-- login/signup error messages
-- update balance without refreshing page
-- dashboard weekly/daily stats

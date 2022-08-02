@@ -44,8 +44,7 @@ def check_task_status(status, late, onTime):
 
 @app.route('/', methods=['GET','POST'])
 def home():
-    if request.method == 'GET':
-        
+    if request.method == 'GET':     
         if 'logged_in' in session and session["logged_in"]:
             user = db.users.find_one({'_id': ObjectId(session["logged_in_id"])})
             bal = user['balance']
