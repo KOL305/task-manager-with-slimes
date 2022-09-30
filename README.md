@@ -21,3 +21,20 @@ How to install requirements:
 
 To run app:
 - Enter in terminal: (Windows) python app.py, (Mac) python3 app.py
+
+.env:
+DEBUG = True
+TESTING = False
+CSRF_ENABLED = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_TYPE='mongodb'
+SESSION_TIME=30
+PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
+MONGO_URI=<<Add your mongogo db url here>>
+
+ENV = "development"
+DOMAIN='http://127.0.0.1:5000'
+SECRET_KEY=<<Add your secret key  here>>
+SECURITY_PASSWORD_SALT=<<Add your password salt here>>

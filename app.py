@@ -11,8 +11,8 @@ from config import Config, db
 
 app = Flask("Task Manager With Slimes")
 app.config.from_object(Config)
-client = PyMongo(app)
-db = client.db
+# client = PyMongo(app)
+# db = client.db
 Session(app)
 
 def login_required(something):

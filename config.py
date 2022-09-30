@@ -28,6 +28,6 @@ class Config:
     SECURITY_PASSWORD_SALT = os.environ.get('SECURITY_PASSWORD_SALT')
     SESSION_TYPE = os.environ.get('SESSION_TYPE')
     PERMANENT_SESSION_LIFETIME = timedelta(
-        minutes=int(os.environ.get('SESSION_TIME')))
+        minutes=15)
     SESSION_MONGODB = mongodb_sess
     SEND_FILE_MAX_AGE_DEFAULT = 60
