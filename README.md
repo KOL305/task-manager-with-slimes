@@ -22,9 +22,8 @@ How to set up virtural environment (in code editor):
 
 How to set up .env (in code editor):
 - create a file called .env
-- Copy and paste the following:
+- Copy and paste the following into .env:
 
-.env:
 DEBUG = True
 TESTING = False
 CSRF_ENABLED = True
