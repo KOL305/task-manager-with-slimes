@@ -16,7 +16,7 @@ How to import app:
 
 How to set up virtural environment (in code editor):
 - Enter in terminal: (Windows) python -m venv venv, (Mac) python3 -m venv venv
-- Enter in terminal: (Windows) venv/Scripts/activate, (Mac) venv/bin/activate
+- Enter in terminal: (Windows) venv/Scripts/activate, (Mac) . venv/bin/activate
 - Make sure that your code editor has selected the venv python interpreter
 
 
