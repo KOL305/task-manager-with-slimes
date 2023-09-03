@@ -1,6 +1,11 @@
 # Task-Manager-With-Slimes
 
 
+
+Description:
+- Web-based task manager that incorporates a virtual slime pet! Complete your tasks and earn coins to customize your pet slime.
+- 2nd Place Winner for the 5th Annual San Ramon Hackathon (2022)
+
 Pre-requisites:
 - MongoDB Account
 - Git Installed
